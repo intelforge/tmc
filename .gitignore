@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+test/
+
+instance/
+*.sqlite
+
+tmc/config.py

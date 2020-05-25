@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  <h1>{% block title %}Log In{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+  	<div class="form-group row">
+  		<div class="col-7">
+			   <label for="username">Username</label>
+			   <input name="username" class="form-control" id="username" required>  			
+  		</div>
+
+  		<div class="col-7">
+			   <label for="password">Password</label>
+			   <input type="password" class="form-control" name="password" id="password" required>
+  		</div>
+	    
+  		<div class="col-7">
+		    <input type="submit" class="btn btn-dark" value="Log In">
+  		</div>
+  	</div>
+  </form>
+{% endblock %}
