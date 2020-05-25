@@ -14,13 +14,13 @@
 <!--Search by Adversary-->
 {% block content %}
   <form method="post">
-    <div class="form-group row">
-      <div class="col-6">
+    <div class="form-group row align-items-end">
+      <div class="col-5">
         <label for="title">Adversary name</label>
         <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>
       </div>
 
-      <div class="col-6">
+      <div class="col-5">
         <input type="submit" class="btn btn-dark" value="Search">
       </div>
     </div>
@@ -28,7 +28,7 @@
 
 <!--Search by Tool-->
   <form method="post">
-    <div class="form-group row">
+    <div class="form-group row align-items-end">
       <div class="col-5">
         <label for="title">Tool name</label>
         <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>

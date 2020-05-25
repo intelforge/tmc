@@ -1,2 +1,2 @@
-# tmc
+# TMC
 Threat Mapping Catalogue

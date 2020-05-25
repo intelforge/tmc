@@ -1,7 +1,7 @@
 -- Initialize the database.
 -- Drop any existing data and create empty tables.
 
-DROP TABLE IF EXISTS user;
+-- DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS adversaries;
 DROP TABLE IF EXISTS tactics;
 DROP TABLE IF EXISTS techniques;
@@ -12,11 +12,11 @@ DROP TABLE IF EXISTS tools_x_techniques;
 DROP TABLE IF EXISTS tactics_x_techniques;
 DROP TABLE IF EXISTS techniques_x_subtechniques;
 
-CREATE TABLE user (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
-);
+--CREATE TABLE user (
+--  id INTEGER PRIMARY KEY AUTOINCREMENT,
+--  username TEXT UNIQUE NOT NULL,
+--  password TEXT NOT NULL
+--);
 
 CREATE TABLE adversaries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,6 +32,7 @@ CREATE TABLE tactics (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  tactic_id TEXT NOT NULL,
   tactic_name TEXT NOT NULL,
   tactic_description TEXT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id)
@@ -41,6 +42,7 @@ CREATE TABLE techniques (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  technique_id TEXT NOT NULL,
   technique_name TEXT NOT NULL,
   technique_description TEXT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id)

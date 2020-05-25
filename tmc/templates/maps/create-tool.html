@@ -12,12 +12,12 @@
 		    <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>
   		</div>
 
-      	<div class="col-9">
-      		<label for="description">Description</label>
-    		<textarea name="description" class="form-control" id="description">{{ request.form['description'] }}</textarea>
-  		</div>
+      <div class="col-9">
+    		<label for="description">Description</label>
+  		  <textarea name="description" class="form-control" id="description">{{ request.form['description'] }}</textarea>
+		  </div>
 
-      	<div class="col-7">
+    	<div class="col-7">
     		<input type="submit" class="btn btn-dark" value="Save">
   		</div>
   	</div>
