@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  <h2>{% block title %}Welcome!{% endblock %}</h2>
+  <p>Start by searching for a tool or an adversary on the database!</p>
+  {% if g.user %}
+    <!--Add new links to different sections this for a home page 
+    <a class="action" href="{{ url_for('maps.create_adversary') }}">New</a>
+
+    Add function to ask you to log in if not logged before searching-->
+  {% endif %}
+{% endblock %}
+
+<!--Search by Adversary-->
+{% block content %}
+  <form method="post">
+    <div class="form-group row">
+      <div class="col-6">
+        <label for="title">Adversary name</label>
+        <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>
+      </div>
+
+      <div class="col-6">
+        <input type="submit" class="btn btn-dark" value="Search">
+      </div>
+    </div>
+  </form>
+
+<!--Search by Tool-->
+  <form method="post">
+    <div class="form-group row">
+      <div class="col-5">
+        <label for="title">Tool name</label>
+        <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>
+      </div>
+
+      <div class="col-5">
+        <input type="submit" class="btn btn-dark" value="Search">
+      </div>
+    </div>
+  </form>
+{% endblock %}
