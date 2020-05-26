@@ -22,9 +22,10 @@ CREATE TABLE adversaries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  adversary_id TEXT NOT NULL,
   adversary_name TEXT NOT NULL,
   adversary_description TEXT NOT NULL,
-  adversary_aliases TEXT NOT NULL,
+  adversary_aliases TEXT,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
@@ -52,6 +53,7 @@ CREATE TABLE subtechniques (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  subtechnique_id TEXT NOT NULL,
   subtechnique_name TEXT NOT NULL,
   subtechnique_description TEXT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id)
@@ -61,9 +63,10 @@ CREATE TABLE tools (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  tool_id TEXT NOT NULL,
   tool_name TEXT NOT NULL,
   tool_description TEXT NOT NULL,
-  tool_aliases TEXT NOT NULL,
+  tool_aliases TEXT,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
@@ -71,8 +74,8 @@ CREATE TABLE adversaries_x_tools (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  adversary_id INTEGER NOT NULL,
-  tool_id INTEGER NOT NULL,
+  adversary_id TEXT NOT NULL,
+  tool_id TEXT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id),
   FOREIGN KEY (adversary_id) REFERENCES adversary (id),
   FOREIGN KEY (tool_id) REFERENCES tool (id)
@@ -83,8 +86,8 @@ CREATE TABLE tools_x_techniques (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  tool_id INTEGER NOT NULL,
-  technique_id INTEGER NOT NULL,
+  tool_id TEXT NOT NULL,
+  technique_id TEXT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id),
   FOREIGN KEY (tool_id) REFERENCES tool (id),
   FOREIGN KEY (technique_id) REFERENCES technique (id)
@@ -95,8 +98,8 @@ CREATE TABLE tactics_x_techniques (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  tactic_id INTEGER NOT NULL,
-  technique_id INTEGER NOT NULL,
+  tactic_id TEXT NOT NULL,
+  technique_id TEXT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id),
   FOREIGN KEY (tactic_id) REFERENCES tactic (id),
   FOREIGN KEY (technique_id) REFERENCES technique (id)
@@ -106,8 +109,8 @@ CREATE TABLE techniques_x_subtechniques (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  technique_id INTEGER NOT NULL,
-  subtechnique_id INTEGER NOT NULL,
+  technique_id TEXT NOT NULL,
+  subtechnique_id TEXT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id),
   FOREIGN KEY (technique_id) REFERENCES technique (id),
   FOREIGN KEY (subtechnique_id) REFERENCES subtechnique (id)
