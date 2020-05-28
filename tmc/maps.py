@@ -17,6 +17,33 @@ def index():
     return render_template('maps/index.html')
 
 # Successful DB update
+@bp.route('/first-time')
+def first_time():
+    
+    print('Inserting tactics...')
+    #get_tactics()
+    
+    print('Inserting techniques...')
+    #get_techniques()
+    
+    print('Inserting groups...')
+    #get_groups()
+    
+    print('Inserting tools...')
+    #get_tools()
+    
+    print('Inserting tactics per techniques...')
+    get_tacxtec()
+    
+    print('Inserting tools per techniques...')
+    tool_x_technique()
+
+    print('Inserting adversary per tools...')
+    adversary_x_tool()
+
+    return render_template('maps/completed.html')
+
+# Successful DB update
 @bp.route('/completed')
 def completed():
 
@@ -30,11 +57,11 @@ def completed():
 @login_required
 def get_tactics():
     lift = attack_client()
-    enterprise_tactics = lift.get_enterprise_tactics()
+    tactics = lift.get_tactics()
 
-    for element in enterprise_tactics:
+    for element in tactics:
         tactic_id = element['external_references'][0]['external_id']
-        tactic_name = element['name'].lower()
+        tactic_name = element['name']
         tactic_description = element['description']
 
         insert_into_table = insert('tactics', tactic_id, tactic_name, tactic_description)
@@ -48,22 +75,28 @@ def get_tactics():
 @login_required
 def get_techniques():
     lift = attack_client()
-    enterprise_techniques = lift.get_enterprise_techniques()
+    techniques = lift.get_techniques()
+    error = [] 
 
-    for element in enterprise_techniques:
+    for element in techniques:
         technique_id = element['external_references'][0]['external_id']
-        technique_name = element['name'].lower()
-        technique_description = element['description']
-        technique_tactic = element['kill_chain_phases'][0]['phase_name'] 
+        technique_name = element['name']
 
-        insert_into_table = insert('techniques', technique_id, technique_name, technique_description)
+        try:
+            technique_description = element['description']
+        except KeyError:
+            technique_description = ''
 
-        print('Created technique %s' % technique_name)
+        try:
+            technique_tactic = element['kill_chain_phases'][0]['phase_name'] 
+            insert_into_table = insert('techniques', technique_id, technique_name, technique_description)
+            print('Created technique %s' % technique_name)
+        except KeyError:
+            error.append(technique_id)
+            # MOBILE TECHNIQUES MISSING TACTIC REFERENCE:
+            #T1443, T1425, T1442, T1419, T1440, T1462, T1460, T1459, T1457, T1445, T1431, T1434, T1473, T1454, T1455, T1441
 
-    
-    #    tactic_x_technique = insert_tactic_x_technique(technique_tactic, technique_name)
-
-    #   print('Created tactic relationship')
+    print(error)
 
     return redirect(url_for('maps.completed'))
 
@@ -73,14 +106,15 @@ def get_techniques():
 @login_required
 def get_tacxtec():
     lift = attack_client()
-    enterprise_techniques = lift.get_enterprise_techniques()
+    techniques = lift.get_techniques()
 
-    for element in enterprise_techniques:
-        technique_name = element['name'].lower()
-        technique_id = get_technique_id('technique_name', technique_name)
+    for element in techniques:
+        technique_name = element['name']
+        technique_attack_id = element['external_references'][0]['external_id']
+        technique_id = get_element_id('techniques', 'technique_id', technique_attack_id)
 
         technique_tactic = element['kill_chain_phases'][0]['phase_name']
-        tactic_id = get_tactic_id(technique_tactic)
+        tactic_id = get_element_id('tactics', 'tactic_name', technique_tactic)
 
         tactic_x_technique = insert_tactic_x_technique(tactic_id, technique_id)
 
@@ -94,11 +128,12 @@ def get_tacxtec():
 @login_required
 def get_groups():
     lift = attack_client()
-    enterprise_groups = lift.get_enterprise_groups()
+    groups = lift.get_groups()
 
-    for element in enterprise_groups:
+    for element in groups:
         group_id = element['external_references'][0]['external_id']
-        group_name = element['name'].lower()
+        group_name = element['name']
+
         try:
             group_description = element['description']
         except KeyError:
@@ -108,7 +143,6 @@ def get_groups():
         except KeyError:
             group_aliases = ''
 
-    
         insert_into_table = insert('adversaries', group_id, group_name, group_description)
 
     return redirect(url_for('maps.completed'))
@@ -119,11 +153,11 @@ def get_groups():
 @login_required
 def get_tools():
     lift = attack_client()
-    enterprise_tools = lift.get_enterprise_tools()
+    tools = lift.get_software()
 
-    for element in enterprise_tools:
+    for element in tools:
         tool_id = element['external_references'][0]['external_id']
-        tool_name = element['name'].lower()
+        tool_name = element['name']
         try:
             tool_description = element['description']
         except KeyError:
@@ -140,54 +174,26 @@ def get_tools():
 
 # INTERACTION WITH DATABASE
 
-
 # Get table element by ID // merge two in one
-def get_tactic_id(value):
+def get_element_id(table, column, value): #FROM MOBILE, TECHNIQUE 'COMPROMISE' needs fixing
 
-    value = value.replace('-', ' ')
-
-    db = get_db()
-    query = get_db().execute(
-        'SELECT id FROM tactics WHERE tactic_name = ?',
-        (value,)
-        ).fetchone()
-    result = query[0]
-
-    return result
-
-
-# Get table element by ID
-def get_technique_id(column, value):
+    value2 = value.replace('-', ' ')
 
     db = get_db()
-    query = get_db().execute(
-        'SELECT id FROM techniques WHERE technique_name = ?',
-        (value,)
-        ).fetchone()
-    result = query[0]
+    try:
+        query = get_db().execute(
+            'SELECT id FROM {} WHERE lower({}) = ?'.format(table, column),
+            (value2.lower(),)
+            ).fetchone()
+        result = query[0]
+        return result
+    except TypeError:
+        embed()
 
-    return result
-
-
-
-# Get last item ID
-def get_last_item_id(table):
-    db = get_db()
-    query = 'SELECT * FROM tactics ORDER BY id DESC LIMIT 1'
-    #query = 'SELECT * FROM {} ORDER BY id DESC LIMIT 1'.format(table)
-    db.execute(query)
-    result = db.commit()
-    if result:
-        new_id = result + 1
-    else:
-        new_id = 1
-
-    return new_id
 
 
 # Isert into db from any table
 def insert(table, element_id, element_name, element_description):
-    id = get_last_item_id(table)
 
     if table == 'adversaries':
         table_id = 'adversary_id'
@@ -197,6 +203,7 @@ def insert(table, element_id, element_name, element_description):
         table_id = table[:-1] + '_id'
         table_name = table[:-1] + '_name'
         table_description = table[:-1] + '_description'
+    
     author_id = g.user['id']
 
     g.db = get_db()
@@ -204,20 +211,6 @@ def insert(table, element_id, element_name, element_description):
     g.db.execute(query, (author_id, element_id, element_name, element_description))
     g.db.commit()
     return redirect(url_for('maps.completed'))
-
-
-# Insert relation tactic_x_technique
-def insert_tactic_x_technique(tactic_id, technique_id):
-    author_id = g.user['id']
-
-    g.db = get_db()
-    query='INSERT INTO {} ({}, {}, {}) VALUES (?, ?, ?)'.format('tactics_x_techniques', 'author_id', 'tactic_id', 'technique_id')
-
-    g.db.execute(query, (author_id, tactic_id, technique_id))
-    g.db.commit()
-
-    return redirect(url_for('maps.completed'))
-
 
 
 # DB INTERACTION FROM FRONT-END
@@ -301,3 +294,86 @@ def create_tool():
             return redirect(url_for('maps.create_tool'))
 
     return render_template('maps/create-tool.html')
+
+
+# Insert Tools x Techniques
+@bp.route('/attackcti_toolxtech', methods=('GET', 'POST'))
+@login_required
+def tool_x_technique():
+    lift = attack_client()
+    tools = lift.get_software()
+    
+    for element in tools:
+        tool_attack_id = element['external_references'][0]['external_id']
+        tool_id = get_tools_by_attack_id(tool_attack_id)
+        techniques_used = lift.get_techniques_used_by_software(element)
+
+        for technique in techniques_used:
+            technique_attack_id = technique['external_references'][0]['external_id']
+            technique_id = get_element_id('techniques', 'technique_id', technique_attack_id)
+            
+            result = insert_tool_x_techn(tool_id, technique_id)
+
+    return True
+
+
+# Insert relation adversary_x_tool
+@bp.route('/attackcti_advxtool', methods=('GET', 'POST'))
+@login_required
+def adversary_x_tool():
+    lift = attack_client()
+    groups = lift.get_groups()
+    
+    for element in groups:
+        adversary_attack_id = element['external_references'][0]['external_id']
+        adversary_id = get_adversary_by_attack_id(adversary_attack_id)
+        adversary = element['name']
+
+        tools_used = lift.get_software_used_by_group(element)
+
+        for tool in tools_used:
+            tool_attack_id = tool['external_references'][0]['external_id']
+            tool_id = get_element_id('tools', 'tool_id', tool_attack_id)
+
+            result = insert_adversary_x_tool(adversary_id, tool_id)
+        
+    return True
+
+
+# Insert relation tool_x_technique
+def insert_tool_x_techn(tool_id, technique_id):
+    author_id = g.user['id']
+
+    g.db = get_db()
+    query='INSERT INTO {} ({}, {}, {}) VALUES (?, ?, ?)'.format('tools_x_techniques', 'author_id', 'tool_id', 'technique_id')
+
+    g.db.execute(query, (author_id, tool_id, technique_id))
+    g.db.commit()
+
+    return redirect(url_for('maps.completed'))
+
+
+# Insert relation tool_x_technique
+def insert_adversary_x_tool(adversary_id, tool_id):
+    author_id = g.user['id']
+
+    g.db = get_db()
+    query='INSERT INTO {} ({}, {}, {}) VALUES (?, ?, ?)'.format('adversaries_x_tools', 'author_id', 'adversary_id', 'tool_id')
+
+    g.db.execute(query, (author_id, adversary_id, tool_id))
+    g.db.commit()
+
+    return redirect(url_for('maps.completed'))
+
+
+# Insert relation tactic_x_technique
+def insert_tactic_x_technique(tactic_id, technique_id):
+    author_id = g.user['id']
+
+    g.db = get_db()
+    query='INSERT INTO {} ({}, {}, {}) VALUES (?, ?, ?)'.format('tactics_x_techniques', 'author_id', 'tactic_id', 'technique_id')
+
+    g.db.execute(query, (author_id, tactic_id, technique_id))
+    g.db.commit()
+
+    return redirect(url_for('maps.completed'))

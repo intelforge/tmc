@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 
 {% block header %}
-  <h2>{% block title %}Welcome!{% endblock %}</h2>
+  <h2>{% block title %}Process completed!{% endblock %}</h2>
   {% if g.user %}
     <!--Add new links to different sections this for a home page -->
     <a class="action" href="{{ url_for('maps.create_adversary') }}">New</a>

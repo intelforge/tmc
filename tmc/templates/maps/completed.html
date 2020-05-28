@@ -1,10 +1,11 @@
 {% extends 'index.html' %}
 
 {% block header %}
-  <h2>{% block title %}Welcome!{% endblock %}</h2>
+  <h2>{% block title %}Thank you for your patience!{% endblock %}</h2>
+  <p>You can now start exploring the database.</p>
   {% if g.user %}
     <!--Add new links to different sections this for a home page -->
-    <a class="action" href="{{ url_for('maps.create_adversary') }}">New</a>
+    <button class='btn btn-dark'><a class="action" style='color: white;' href="{{ url_for('maps.create_adversary') }}">Search</a></button>
   {% endif %}
 {% endblock %}
 

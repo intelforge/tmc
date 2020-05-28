@@ -8,7 +8,7 @@ html, body {
 }
 
 .btn-dark {
-	background-color: #ef0276;
+	background-color: #6f00cb;
 }
 
 label, .btn-dark {
@@ -43,11 +43,15 @@ nav ul li {
 }
 
 header, nav h1 {
-	color: #03c9ee; /*rosa #ef0276*/
+	color: white; /*rosa #ef0276*/
 }
 
 ul li a {
 	color: white;
+}
+
+a:hover {
+	color: #03c9ee;
 }
 
 
@@ -56,6 +60,10 @@ ul li a {
 ****************/
 
 div.container {
-	background-color: rgba(1,1,45,0.4);
+	background-color: rgba(1,1,45,0.6);
 	padding: 2%;
+}
+
+.btn:hover, .bnt-dark:hover {
+	background-color: #ef0276;
 }
