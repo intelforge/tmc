@@ -1,14 +1,6 @@
 {% extends 'index.html' %}
 
 {% block header %}
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-    $('.js-example-basic-single').select2();
-    });
-
-  </script>
-
   <h2>{% block title %}Welcome!{% endblock %}</h2>
   <p>Start by searching for a tool or an adversary on the database!</p>
   {% if g.user %}
@@ -24,12 +16,12 @@
   <form method="post">
     <div class="form-group row align-items-end">
       <div class="col-5">
-        <label for="title">Insert URL</label>
+        <label for="title">Adversary name</label>
         <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>
       </div>
 
       <div class="col-5">
-        <input type="submit" class="btn btn-dark" value="Map!">
+        <input type="submit" class="btn btn-dark" value="Search">
       </div>
     </div>
   </form>
@@ -38,13 +30,12 @@
   <form method="post">
     <div class="form-group row align-items-end">
       <div class="col-5">
-        <label for="title">Select Adversary name</label>
-         <!-- Make this an editable input a dropdown menu with a select to the adversaries in the database -->
-        <select class="js-example-basic-multiple" name="states[]" multiple="multiple">
-          <option value="AL">APTX</option>
-            ...
-          <option value="WY">APTCC</option>
-        </select>
+        <label for="title">Tool name</label>
+        <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>
+      </div>
+
+      <div class="col-5">
+        <input type="submit" class="btn btn-dark" value="Search">
       </div>
     </div>
   </form>

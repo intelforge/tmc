@@ -49,6 +49,11 @@ def completed():
 
     return render_template('maps/completed.html')
 
+@bp.route('/search')
+def search():
+
+    return render_template('maps/search.html')
+
 
 # ATT&CK FRAMEWORK INTERACTION 
 

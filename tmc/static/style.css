@@ -3,12 +3,13 @@
 ****************/
 
 html, body {
-	background-color: #00003e;
-	color: #fff;
+	background-color: #fff;
+	color: #000;
+	font-size: 1em;
 }
 
 .btn-dark {
-	background-color: #6f00cb;
+	background-color: #000;
 }
 
 label, .btn-dark {
@@ -16,20 +17,35 @@ label, .btn-dark {
 }
 
 h2, p {
-	color: #fff;
+	color: #000;
 }
+
+
+
+.container:not(nav){
+	border: solid 1px #000;
+}
+
+
 
 /***************
 #Nav
 ****************/
 
 nav {
-	border-bottom: 1px solid #6f00cb;
 	margin-bottom: 2%;
+
 }
+
+img	{
+	width: 5%;
+}
+
 
 nav h1 {
 	margin-top: 5%;
+	display: inline-block;
+	vertical-align: sub;
 }
 
 nav ul {
@@ -42,16 +58,13 @@ nav ul li {
 	padding-right: 2%;
 }
 
-header, nav h1 {
-	color: white; /*rosa #ef0276*/
-}
 
 ul li a {
-	color: white;
+	color: #000;
 }
 
-a:hover {
-	color: #03c9ee;
+a:hover, ul li a:hover {
+	color: #FF0000;
 }
 
 
@@ -60,10 +73,10 @@ a:hover {
 ****************/
 
 div.container {
-	background-color: rgba(1,1,45,0.6);
+	/* background-color: rgba(1,1,45,0.6);*/
 	padding: 2%;
 }
 
 .btn:hover, .bnt-dark:hover {
-	background-color: #ef0276;
+	background-color: #424242;
 }
