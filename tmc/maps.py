@@ -19,44 +19,126 @@ def index():
 
     return render_template('maps/index.html', adversaries_list=adversaries_list)
 
-# Successful DB update
-@bp.route('/first-time')
-def first_time():
-    
-    print('Inserting tactics...')
-    get_tactics()
+# List all posible actions to display data
+@bp.route('/explore')
+def explore():
 
-    print('Inserting techniques...')
-    get_techniques()
-    
-    print('Inserting groups...')
-    get_groups()
-    
-    print('Inserting tools...')
-    get_tools()
-    
-    print('Inserting tactics per techniques...')
-    get_tacxtec()
-    
-    print('Inserting tools per techniques...')
-    tool_x_technique()
-
-    print('Inserting adversary per tools...')
-    adversary_x_tool()
-
-    return render_template('maps/completed.html')
-
-# Successful DB update
-@bp.route('/completed')
-def completed():
-
-    return render_template('maps/completed.html')
-
-@bp.route('/search')
-def search():
+    return render_template('maps/explore.html') 
 
 
-    return render_template('maps/search.html')
+# Displays all adversaries in the DB
+@bp.route('/explore-adversaries')
+def explore_adversaries():
+
+    adversaries = q.q_get_adversaries.get_adversaries()
+    adversaries_th = adversaries[0].keys()  
+
+    return render_template('maps/explore-adversaries.html', adversaries=adversaries, adversaries_th=adversaries_th)
+
+
+# Displays all campaigns in the DB
+@bp.route('/explore-campaigns')
+def explore_campaigns():
+
+    # campaigns = q.q_get_campaigns.get_campaigns()
+    # campaigns_th = campaigns[0].keys() 
+
+    return render_template('maps/explore-campaigns.html') #, campaigns=campaigns, campaigns_th=campaigns_th)
+
+
+# Displays all tools in the DB
+@bp.route('/explore-tools')
+def explore_tools():
+
+    tools = q.q_get_tools.get_tools()
+    tools_th = tools[0].keys()   
+
+    return render_template('maps/explore-adversaries.html', tools=tools, tools_th=tools_th)
+
+
+# Displays all technique in the DB
+@bp.route('/explore-techniques')
+def explore_techniques():
+
+    techniques = q.q_get_techniques.get_techniques()
+    techniques_th = techniques[0].keys()    
+
+    return render_template('maps/explore-techniques.html', techniques=techniques, techniques_th=techniques_th)
+
+
+# Displays all subtechniques in the DB
+@bp.route('/explore-subtechniques')
+def explore_subtechniques():
+
+    # subtechniques = q.q_get_subtechniques.get_subtechniques()
+    # subtechniques_th = subtechniques[0].keys()  
+
+    return render_template('maps/explore-subtechniques.html') #, subtechniques=subtechniques, subtechniques_th=subtechniques_th)
+
+
+# DB Analysis Screens
+
+# Display Adversaries per campaign
+@bp.route('/adversaries-x-campaign')
+def adversaries_x_campaign():  
+
+    return render_template('maps/relations/adversaries-x-campaign.html')
+
+
+# Display Adversaries per tool
+@bp.route('/adversaries-x-tool')
+def adversaries_x_tool(): 
+
+    return render_template('maps/relations/adversaries-x-tool.html')
+
+
+# Display Adversaries per technique
+@bp.route('/adversaries-x-technique')
+def adversaries_x_technique():
+
+    return render_template('maps/relations/adversaries-x-technique.html')
+
+
+# Display Adversaries per suspected origin
+@bp.route('/adversaries-x-sorigin')
+def adversaries_x_sorigin():  
+
+    return render_template('maps/relations/adversaries-x-sorigin.html')
+
+
+# Display Adversaries per industry
+@bp.route('/adversaries-per-industry')
+def adversaries_x_industry():    
+
+    return render_template('maps/relations/adversaries-per-industry.html')
+
+
+# Display Tools per techniques
+@bp.route('/tools-x-techniques')
+def tools_x_techniques():
+
+    return render_template('maps/relations/tools-x-techniques.html')
+
+
+# Display Campaigns by industry
+@bp.route('/campaigns-x-industry')
+def campaigns_x_industry():
+
+    return render_template('maps/relations/campaigns-x-industry.html')
+
+
+# Display Most used techniques
+@bp.route('/most-used-technique')
+def most_used_techniques():    
+
+    return render_template('maps/relations/most-used-technique.html')
+
+
+# Display Techniques per industry
+@bp.route('/techniques-per-industry')
+def techniques_per_industry(): 
+
+    return render_template('maps/relations/techniques-x-industry.html')
 
 
 # ATT&CK FRAMEWORK INTERACTION 
@@ -314,3 +396,53 @@ def adversary_x_tool():
             result = q.q_insert_adversary_x_tool.insert_adversary_x_tool(adversary_id, tool_id)
         
     return True
+
+
+# Creates the new campaign in the database
+@bp.route('/create-campaign', methods=('GET', 'POST'))
+@login_required
+def create_campaign():
+
+    return render_template('maps/create-adversary.html')
+
+
+# Creates the new campaign in the database
+@bp.route('/create-subtechnique', methods=('GET', 'POST'))
+@login_required
+def create_subtechnique():
+
+    return render_template('maps/create-subtechnique.html')
+
+
+# Loading ATT&CK to DB for the first time
+@bp.route('/first-time')
+def first_time():
+    
+    print('Inserting tactics...')
+    get_tactics()
+
+    print('Inserting techniques...')
+    get_techniques()
+    
+    print('Inserting groups...')
+    get_groups()
+    
+    print('Inserting tools...')
+    get_tools()
+    
+    print('Inserting tactics per techniques...')
+    get_tacxtec()
+    
+    print('Inserting tools per techniques...')
+    tool_x_technique()
+
+    print('Inserting adversary per tools...')
+    adversary_x_tool()
+
+    return render_template('maps/completed.html')
+
+# Successful DB update
+@bp.route('/completed')
+def completed():
+
+    return render_template('maps/completed.html')

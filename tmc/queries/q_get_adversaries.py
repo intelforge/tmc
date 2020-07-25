@@ -1,16 +1,17 @@
 from flask import ( g, redirect, url_for )
-from tmc.db import get_db
+from tmc.db import get_db, make_dicts
 from attackcti import attack_client
 from IPython import embed
 
 # Get list of all adversaries available in the database.
-def get_adversaries_names():
+def get_adversaries():
 
     db = get_db()
     try:
-        db.row_factory = lambda cursor, row: row[0]
+        db.row_factory = make_dicts
+        #db.row_factory = lambda cursor, row: {row: row[0]}
         query = db.execute(
-            'SELECT adversary_name FROM adversaries').fetchall()
+            'SELECT adversary_id as ID, adversary_name as Name, adversary_identifiers as Identifiers, adversary_description as Description FROM adversaries ORDER BY Name').fetchall()
         return query
     except TypeError:
         #embed()

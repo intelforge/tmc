@@ -4,5 +4,10 @@ __all__ = ["q_get_element_id",
           "q_insert_tactic_x_technique",
           "q_insert_tool_x_techn",
           "q_insert_adversary_into_tables",
-          "q_get_adversaries_names"
+          "q_get_adversaries_names",
+          "q_get_adversaries",
+		  "q_get_campaigns",
+		  "q_get_tools",
+		  "q_get_techniques",
+		  "q_get_subtechniques",
            ]

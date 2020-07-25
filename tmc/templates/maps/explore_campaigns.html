@@ -1,0 +1,52 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  {% if g.user %}
+  <div class="create-menu">
+    <ul>
+      <li> <a class="action" href="{{ url_for('maps.create_adversary') }}">Create adversary</a></li>
+     <!-- <li><a href="{{ url_for('maps.create_campaign') }}">Create campaign</a></li> -->
+      <li><a href="{{ url_for('maps.create_tool') }}">Create tool</a></li>
+      <li><a href="{{ url_for('maps.create_technique') }}">Create techinque</a></li>
+      <li><a href="{{ url_for('maps.create_subtechnique') }}">Create subtechnique</a></li>
+    </ul>
+  </div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!--TO DO: Add search filter at the top-->
+
+<!--
+Explore Campaigns
+  <form method="post">
+    <div class="form-group row align-items-end">
+      <div class="col-12">
+        <h3 for="title">Campaigns</h3>
+          <table>
+            <thead>
+              <tr>
+              {% for element in adversaries_th %}
+                  <th>{{ element }}</th>
+              {% endfor %}
+                  <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for element in adversaries %}
+              <tr>
+              {% for key, value in element.items() %}
+                <td>{{ value }}</td>
+              {% endfor %}
+                <td>*Edit & Download buttons*</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+      </div>
+    </div>
+  </form>
+-->
+
+{% endblock %}

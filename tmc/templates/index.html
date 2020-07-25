@@ -3,6 +3,8 @@
 <title>{% block title %}{% endblock %}TMC</title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://kit.fontawesome.com/f77d338b26.js" crossorigin="anonymous"></script>
+
 
 <!--
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
@@ -14,16 +16,14 @@
   <img src="../static/glasses.png" alt='glasses logo'>
   <h1 style="font-size: 1.4em;">Threat Mapping Catalogue</h1>
   <ul>
-    <li><a href="{{ url_for('maps.index') }}">Map!</a>
-    <li><a href="{{ url_for('maps.search') }}">Explore</a>
-    <li><a href="{{ url_for('maps.create_adversary') }}">New Adversary</a>
-    <li><a href="{{ url_for('maps.create_tool') }}">New Tool</a>
+    <li><a href="{{ url_for('maps.index') }}">Map!</a></li>
+    <li><a href="{{ url_for('maps.explore') }}">Explore</a></li>
     {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
-      <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+      <li><span>{{ g.user['username'] }}</span></li>
+      <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
     {% else %}
-      <li><a href="{{ url_for('auth.register') }}">Register</a>
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
+      <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+      <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
     {% endif %}
   </ul>
 </nav>

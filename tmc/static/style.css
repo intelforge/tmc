@@ -80,3 +80,28 @@ div.container {
 .btn:hover, .bnt-dark:hover {
 	background-color: #424242;
 }
+
+/***************
+#Explore
+****************/
+.create-menu ul, .action-list {
+	text-decoration: none;
+	text-align: right;
+}
+
+.create-menu ul li, i {
+	display: inline-block;
+}
+
+.create-menu ul li {
+	background-color: #000;
+	border: 1px solid black;
+	padding: 0.2% 0.9%;
+	margin-left: 2%
+}
+
+.create-menu ul li a {
+	font-size: 0.8em;
+	color: #fff;
+}
+

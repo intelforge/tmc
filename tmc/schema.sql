@@ -70,6 +70,17 @@ CREATE TABLE tools (
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
+CREATE TABLE campaigns (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  author_id INTEGER NOT NULL,
+  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  campaign_id TEXT NOT NULL,
+  campaign_name TEXT NOT NULL,
+  campaign_description TEXT NOT NULL,
+  campaign_industry TEXT,
+  FOREIGN KEY (author_id) REFERENCES user (id)
+);
+
 CREATE TABLE adversaries_x_tools (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,

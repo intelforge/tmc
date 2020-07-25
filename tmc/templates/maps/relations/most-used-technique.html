@@ -1,0 +1,53 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  {% if g.user %}
+  <div class="create-menu">
+    <ul>
+      <li> <a class="action" href="{{ url_for('maps.create_adversary') }}">Create adversary</a></li>
+     <!-- <li><a href="{{ url_for('maps.create_campaign') }}">Create campaign</a></li> -->
+      <li><a href="{{ url_for('maps.create_tool') }}">Create tool</a></li>
+      <li><a href="{{ url_for('maps.create_technique') }}">Create techinque</a></li>
+      <li><a href="{{ url_for('maps.create_subtechnique') }}">Create subtechnique</a></li>
+    </ul>
+  </div>
+  {% endif %}
+{% endblock %}
+
+<!--TO DO: Add search filter at the top-->
+
+<!--Explore Adversary-->
+{% block content %}
+  <form method="post">
+    <div class="form-group row align-items-end">
+      <div class="col-12">
+        <h3 for="title">Adversaries</h3>
+          <table class="table">
+            <thead>
+              <tr>
+              {% for element in adversaries_th %}
+                  <th scope="col">{{ element }}</th>
+              {% endfor %}
+                  <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for element in adversaries %}
+              <tr>
+              {% for key, value in element.items() %}
+                <td scope="row">{{ value }}</td>
+              {% endfor %}
+                <td scope="row">
+                    <i class="fas fa-edit"></i>
+                    <i class="fas fa-file-download">
+                    <i class="fas fa-file-export"></i>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+      </div>
+    </div>
+  </form>
+
+{% endblock %}

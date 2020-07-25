@@ -42,9 +42,9 @@
         <label for="title">Select Adversary name</label>
          <!-- Make this an editable input a dropdown menu with a select to the adversaries in the database -->
         <select>
-              {% for name in adversaries_list %}
-                <option value="* {{ name }}"> * {{ name }}</option>
-              {% endfor %}
+            {% for name in adversaries_list %}
+              <option value="{{ name }}">{{ name }}</option>
+            {% endfor %}
         </select>
       </div>
     </div>
