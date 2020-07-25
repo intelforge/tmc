@@ -15,8 +15,9 @@ bp = Blueprint('maps', __name__)
 # Homepage
 @bp.route('/')
 def index():
+    adversaries_list = q.q_get_adversaries_names.get_adversaries_names()
 
-    return render_template('maps/index.html')
+    return render_template('maps/index.html', adversaries_list=adversaries_list)
 
 # Successful DB update
 @bp.route('/first-time')
@@ -53,6 +54,7 @@ def completed():
 
 @bp.route('/search')
 def search():
+
 
     return render_template('maps/search.html')
 

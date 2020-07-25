@@ -2,15 +2,16 @@
 
 {% block header %}
 
+<!--
   <script type="text/javascript">
     $(document).ready(function() {
     $('.js-example-basic-single').select2();
     });
 
-  </script>
+  </script> -->
 
   <h2>{% block title %}Welcome!{% endblock %}</h2>
-  <p>Start by searching for a tool or an adversary on the database!</p>
+  <p>Load one or multiple URLs to carry out the mapping against TRAM. Select which adversary you want that mapping to be associated with.</p>
   {% if g.user %}
     <!--Add new links to different sections this for a home page 
     <a class="action" href="{{ url_for('maps.create_adversary') }}">New</a>
@@ -40,10 +41,10 @@
       <div class="col-5">
         <label for="title">Select Adversary name</label>
          <!-- Make this an editable input a dropdown menu with a select to the adversaries in the database -->
-        <select class="js-example-basic-multiple" name="states[]" multiple="multiple">
-          <option value="AL">APTX</option>
-            ...
-          <option value="WY">APTCC</option>
+        <select>
+              {% for name in adversaries_list %}
+                <option value="* {{ name }}"> * {{ name }}</option>
+              {% endfor %}
         </select>
       </div>
     </div>
