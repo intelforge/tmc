@@ -10,7 +10,7 @@ def get_adversaries_names():
     try:
         db.row_factory = lambda cursor, row: row[0]
         query = db.execute(
-            'SELECT adversary_name FROM adversaries').fetchall()
+            'SELECT adversary_name FROM adversaries ORDER BY adversary_name').fetchall()
         return query
     except TypeError:
         #embed()

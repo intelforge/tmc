@@ -4,14 +4,17 @@ from attackcti import attack_client
 from IPython import embed
 
 # Get list of all adversaries available in the database.
-def get_adversaries():
+def get_adversaries_x_tool():
 
     db = get_db()
     try:
         db.row_factory = make_dicts
-        #db.row_factory = lambda cursor, row: {row: row[0]}
         query = db.execute(
-            'SELECT adversary_id as ID, adversary_name as Adversary, adversary_identifiers as Identifiers, adversary_description as Description FROM adversaries ORDER BY adversary_name ASC').fetchall()
+            "SELECT a.adversary_id As \'Adversary ID\', a.adversary_name as Adversary, t.tool_id as \'Tool ID\', t.tool_name as Technique \
+                FROM adversaries a \
+                inner join adversaries_x_tools axt on axt.adversary_id=a.id \
+                inner join tools t on axt.tool_id=t.id \
+                ORDER BY a.adversary_name").fetchall()
         return query
     except TypeError:
         #embed()

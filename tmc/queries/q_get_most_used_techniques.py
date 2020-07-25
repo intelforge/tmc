@@ -4,14 +4,16 @@ from attackcti import attack_client
 from IPython import embed
 
 # Get list of all adversaries available in the database.
-def get_adversaries():
+def get_most_used_techniques():
 
     db = get_db()
     try:
         db.row_factory = make_dicts
-        #db.row_factory = lambda cursor, row: {row: row[0]}
         query = db.execute(
-            'SELECT adversary_id as ID, adversary_name as Adversary, adversary_identifiers as Identifiers, adversary_description as Description FROM adversaries ORDER BY adversary_name ASC').fetchall()
+            'SELECT  t.technique_id as \'Technique ID\', t.technique_name as Technique, count(*) as Hits FROM techniques t \
+                inner join tools_x_techniques txt on txt.technique_id=t.id \
+                GROUP by t.technique_name \
+                ORDER BY Hits Desc').fetchall()
         return query
     except TypeError:
         #embed()

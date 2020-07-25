@@ -29,14 +29,14 @@
 <h2>Explore database relationships</h2>
 
 <ul>
-  <li><a href="{{ url_for('maps.adversaries_x_campaign') }}">Adversaries per campaign</a></li>
-  <li><a href="{{ url_for('maps.adversaries_x_tool') }}">Adversaries per tool</a></li>
-  <li><a href="{{ url_for('maps.adversaries_x_technique') }}">Adversaries per technique</a></li>
-  <li><a href="{{ url_for('maps.adversaries_x_sorigin') }}">Adversaries per suspected origin</a></li>
-  <li><a href="{{ url_for('maps.adversaries_x_industry') }}">Adversaries per industry</a></li>
-  <li><a href="{{ url_for('maps.tools_x_techniques') }}">Tools per techniques</a></li>
-  <li><a href="{{ url_for('maps.campaigns_x_industry') }}">Campaigns per industry</a></li>
-  <li><a href="{{ url_for('maps.most_used_techniques') }}">Most used techniques</a></li>
-  <li><a href="{{ url_for('maps.techniques_per_industry') }}">Techniques per industry</a></li>
+  <li><a href="{{ url_for('maps.get_adversaries_x_campaign') }}">Adversaries per campaign</a></li>
+  <li><a href="{{ url_for('maps.get_adversaries_x_tool') }}">Adversaries per tool</a></li>
+  <li><a href="{{ url_for('maps.get_adversaries_x_technique') }}">Adversaries per technique</a></li>
+  <li><a href="{{ url_for('maps.get_adversaries_x_sorigin') }}">Adversaries per suspected origin</a></li>
+  <li><a href="{{ url_for('maps.get_adversaries_x_industry') }}">Adversaries per industry</a></li>
+  <li><a href="{{ url_for('maps.get_tools_x_techniques') }}">Tools per techniques</a></li>
+  <li><a href="{{ url_for('maps.get_campaigns_x_industry') }}">Campaigns per industry</a></li>
+  <li><a href="{{ url_for('maps.get_most_used_techniques') }}">Most used techniques</a></li>
+  <li><a href="{{ url_for('maps.get_techniques_per_industry') }}">Techniques per industry</a></li>
 </ul>
 {% endblock %}

@@ -21,26 +21,27 @@
   <form method="post">
     <div class="form-group row align-items-end">
       <div class="col-12">
-        <h3 for="title">Adversaries</h3>
+        <h3 for="title">Most used technique</h3>
           <table class="table">
             <thead>
               <tr>
-              {% for element in adversaries_th %}
+              {% for element in most_used_techniques_th %}
                   <th scope="col">{{ element }}</th>
               {% endfor %}
                   <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
-            {% for element in adversaries %}
+            {% for element in most_used_techniques %}
               <tr>
               {% for key, value in element.items() %}
                 <td scope="row">{{ value }}</td>
               {% endfor %}
-                <td scope="row">
-                    <i class="fas fa-edit"></i>
-                    <i class="fas fa-file-download">
-                    <i class="fas fa-file-export"></i>
+                <td scope="row" class="col-2">
+                    <a href="../edit.html"><i class="fas fa-edit fa-lg" title="Edit"></i></a>
+                    <a href="/svg"><i class="fas fa-file-download fa-lg" title="Download as SVG"></i></a>
+                    <a href="/export"><i class="fas fa-file-export fa-lg" title="Export as CSV"></i></a>
+                    <a href="/open-in-nav"><i class="fas fa-external-link-square-alt fa-lg" title="Open in navigator"></i></a>
                 </td>
               </tr>
             {% endfor %}
