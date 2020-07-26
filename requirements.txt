@@ -3,3 +3,4 @@ functools
 sqlite3
 click
 attackcti
+IPython
