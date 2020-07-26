@@ -19,4 +19,5 @@ __all__ = ["q_get_element_id",
           "q_get_campaigns_x_industry",
           "q_get_most_used_techniques",
           "q_get_techniques_per_industry",
+          "q_insert_relation_into_tables",
            ]

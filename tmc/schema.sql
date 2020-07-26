@@ -26,6 +26,8 @@ CREATE TABLE adversaries (
   adversary_name TEXT NOT NULL,
   adversary_description TEXT NOT NULL,
   adversary_identifiers TEXT,
+  adversay_sorigin TEXT,
+  adversary_language TEXT,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
@@ -66,7 +68,7 @@ CREATE TABLE tools (
   tool_id TEXT NOT NULL,
   tool_name TEXT NOT NULL,
   tool_description TEXT NOT NULL,
-  tool_aliases TEXT,
+  tool_identifiers TEXT,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
@@ -78,6 +80,7 @@ CREATE TABLE campaigns (
   campaign_name TEXT NOT NULL,
   campaign_description TEXT NOT NULL,
   campaign_industry TEXT,
+  campaign_date DATETIME,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 

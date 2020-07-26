@@ -10,7 +10,7 @@ def get_tools():
     try:
         db.row_factory = make_dicts
         query = db.execute(
-            'SELECT tool_id as ID, tool_name as Name, tool_description as Description, tool_aliases as Identifiers FROM tools ORDER BY Name').fetchall()
+            'SELECT tool_id as ID, tool_name as Name, tool_description as Description, tool_identifiers as Identifiers FROM tools ORDER BY Name').fetchall()
         return query
     except TypeError:
         #embed()

@@ -15,7 +15,7 @@ bp = Blueprint('maps', __name__)
 # Homepage
 @bp.route('/')
 def index():
-    
+
     adversaries_list = q.q_get_adversaries_names.get_adversaries_names()
 
     return render_template('maps/index.html', adversaries_list=adversaries_list)
@@ -208,9 +208,10 @@ def get_tactics():
 @login_required
 def get_techniques():
     lift = attack_client()
-    techniques = lift.get_techniques()
+    unsorted_techniques = lift.get_techniques()
+    techniques = sorted(unsorted_techniques, key = lambda i: i['external_references'][0]['external_id'])
     error = [] 
-
+    
     for element in techniques:
         technique_id = element['external_references'][0]['external_id']
         technique_name = element['name']
@@ -222,8 +223,13 @@ def get_techniques():
 
         try:
             technique_tactic = element['kill_chain_phases'][0]['phase_name'] 
-            insert_into_table = q.q_insert_into_tables.insert_into_tables('techniques', technique_id, technique_name, technique_description)
-            print('Created technique %s' % technique_name)
+
+            if '.' in technique_id:
+                print('entre al if')
+                create_subtechnique(technique_id, technique_name, technique_description, '')
+            else:
+                insert_into_table = q.q_insert_into_tables.insert_into_tables('techniques', technique_id, technique_name, technique_description)
+                print('Created technique %s' % technique_name)
         except KeyError:
             error.append(technique_id)
             # MOBILE TECHNIQUES MISSING TACTIC REFERENCE:
@@ -304,9 +310,9 @@ def get_tools():
         except KeyError:
             tool_description = ''
         try:
-            tool_aliases = element['x_mitre_aliases']
+            tool_identifiers = element['x_mitre_aliases']
         except KeyError:
-            tool_aliases = ''
+            tool_identifiers = ''
 
         insert_into_table = q.q_insert_into_tables.insert_into_tables('tools', tool_id, tool_name, tool_description)
 
@@ -314,6 +320,26 @@ def get_tools():
 
 
 # DB INTERACTION FROM FRONT-END
+
+# Creates the new subtechnique in the database
+@bp.route('/create-subtechnique', methods=('GET', 'POST'))
+def create_subtechnique(technique_id, subtechnique_name, subtechnique_description, *related_technique):
+
+    subtechnique_attack_id = ''
+    technique_attack_id = ''
+
+    if '.' in technique_id: 
+        technique_attack_id,subtechnique_attack_id = technique_id.split('.', 1)
+        related_technique=q.q_get_element_id.get_element_id('techniques', 'technique_id', technique_attack_id)
+
+    insert_into_table = q.q_insert_into_tables.insert_into_tables('subtechniques', subtechnique_attack_id, subtechnique_name, subtechnique_description)
+    subtechnique_id=q.q_get_element_id.get_element_id('subtechniques', 'subtechnique_id', subtechnique_attack_id)
+
+    techniques_x_subtechniques(related_technique, subtechnique_id)
+
+    return redirect(url_for('maps.completed'))
+    #return render_template('maps/creation/create-subtechnique.html')
+
 
 # Creates the new adversary in the database
 @bp.route('/create-adversary', methods=('GET', 'POST'))
@@ -342,33 +368,6 @@ def create_adversary():
     return render_template('maps/creation/create-adversary.html')
 
 
-# Creates the new technique in the database
-@bp.route('/create-technique', methods=('GET', 'POST'))
-@login_required
-def create_technique():
-    if request.method == 'POST':
-        tool_name = request.form['name']
-        tool_description = request.form['description']
-        error = None
-
-        if not tool_name:
-            error = 'Technique name is required.'
-
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO techniques (technique_name, technique_description, author_id)'
-                ' VALUES (?, ?, ?)',
-                (title, body, g.user['id'])
-            )
-            db.commit()
-            return redirect(url_for('maps.create_technique'))
-
-    return render_template('maps/creation/create-technique.html')
-
-
 # Creates the new tool in the database
 @bp.route('/create-tool', methods=('GET', 'POST'))
 @login_required
@@ -394,6 +393,42 @@ def create_tool():
             return redirect(url_for('maps.create_tool'))
 
     return render_template('maps/creation/create-tool.html')
+
+
+# Creates the new technique in the database
+@bp.route('/create-technique', methods=('GET', 'POST'))
+@login_required
+def create_technique():
+    if request.method == 'POST':
+        tool_name = request.form['name']
+        tool_description = request.form['description']
+        error = None
+
+        if not tool_name:
+            error = 'Technique name is required.'
+
+        if error:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'INSERT INTO techniques (technique_name, technique_description, author_id)'
+                ' VALUES (?, ?, ?)',
+                (title, body, g.user['id'])
+            )
+            db.commit()
+            return redirect(url_for('maps.create_technique'))
+
+    return render_template('maps/creation/create-technique.html')
+
+
+# Insert Subtechniques x Techniques
+@bp.route('/subtechxtech', methods=('GET', 'POST'))
+def techniques_x_subtechniques(related_technique, subtechnique_id):
+    
+    insert_into_table = q.q_insert_relation_into_tables.insert_relation_into_tables('techniques_x_subtechnique', related_technique, subtechnique_id)
+
+    return True
 
 
 # Insert Tools x Techniques
@@ -446,14 +481,6 @@ def adversary_x_tool():
 def create_campaign():
 
     return render_template('maps/creation/create-adversary.html')
-
-
-# Creates the new campaign in the database
-@bp.route('/create-subtechnique', methods=('GET', 'POST'))
-@login_required
-def create_subtechnique():
-
-    return render_template('maps/creation/create-subtechnique.html')
 
 
 # Loading ATT&CK to DB for the first time
