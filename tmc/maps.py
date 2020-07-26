@@ -71,10 +71,10 @@ def explore_techniques():
 @bp.route('/explore-subtechniques')
 def explore_subtechniques():
 
-    # subtechniques = q.q_get_subtechniques.get_subtechniques()
-    # subtechniques_th = subtechniques[0].keys()  
+    subtechniques = q.q_get_subtechniques.get_subtechniques()
+    subtechniques_th = subtechniques[0].keys()  
 
-    return render_template('maps/explore/explore-subtechniques.html') #, subtechniques=subtechniques, subtechniques_th=subtechniques_th)
+    return render_template('maps/explore/explore-subtechniques.html', subtechniques=subtechniques, subtechniques_th=subtechniques_th)
 
 
 # DB Analysis Screens
@@ -211,7 +211,7 @@ def get_techniques():
     unsorted_techniques = lift.get_techniques()
     techniques = sorted(unsorted_techniques, key = lambda i: i['external_references'][0]['external_id'])
     error = [] 
-    
+
     for element in techniques:
         technique_id = element['external_references'][0]['external_id']
         technique_name = element['name']
@@ -225,7 +225,6 @@ def get_techniques():
             technique_tactic = element['kill_chain_phases'][0]['phase_name'] 
 
             if '.' in technique_id:
-                print('entre al if')
                 create_subtechnique(technique_id, technique_name, technique_description, '')
             else:
                 insert_into_table = q.q_insert_into_tables.insert_into_tables('techniques', technique_id, technique_name, technique_description)
@@ -426,7 +425,7 @@ def create_technique():
 @bp.route('/subtechxtech', methods=('GET', 'POST'))
 def techniques_x_subtechniques(related_technique, subtechnique_id):
     
-    insert_into_table = q.q_insert_relation_into_tables.insert_relation_into_tables('techniques_x_subtechnique', related_technique, subtechnique_id)
+    insert_into_table = q.q_insert_relation_into_tables.insert_relation_into_tables('techniques_x_subtechniques', 'technique_id', 'subtechnique_id', related_technique, subtechnique_id)
 
     return True
 

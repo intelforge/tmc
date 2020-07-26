@@ -10,7 +10,7 @@ def get_subtechniques():
     try:
         db.row_factory = make_dicts
         query = db.execute(
-            'SELECT subtechnique_id, subtechnique_name, subtechnique_description FROM adversaries').fetchall()
+            'SELECT subtechnique_id as ID, subtechnique_name as Name, subtechnique_description as Description FROM subtechniques ORDER BY subtechnique_id').fetchall()
         return query
     except TypeError:
         #embed()

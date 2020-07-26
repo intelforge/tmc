@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS adversaries;
 DROP TABLE IF EXISTS tactics;
 DROP TABLE IF EXISTS techniques;
 DROP TABLE IF EXISTS subtechniques;
+DROP TABLE IF EXISTS campaigns;
 DROP TABLE IF EXISTS tools;
 DROP TABLE IF EXISTS adversaries_x_tools;
 DROP TABLE IF EXISTS tools_x_techniques;
@@ -27,7 +28,6 @@ CREATE TABLE adversaries (
   adversary_description TEXT NOT NULL,
   adversary_identifiers TEXT,
   adversay_sorigin TEXT,
-  adversary_language TEXT,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
@@ -106,7 +106,6 @@ CREATE TABLE tools_x_techniques (
   FOREIGN KEY (tool_id) REFERENCES tool (id),
   FOREIGN KEY (technique_id) REFERENCES technique (id)
 );
-
 
 CREATE TABLE tactics_x_techniques (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

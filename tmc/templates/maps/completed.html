@@ -5,7 +5,7 @@
   <p>You can now start exploring the database.</p>
   {% if g.user %}
     <!--Add new links to different sections this for a home page -->
-    <button class='btn btn-dark'><a class="action" style='color: white;' href="{{ url_for('maps.create_adversary') }}">Search</a></button>
+    <button class='btn btn-dark'><a class="action" style='color: white;' href="{{ url_for('maps.explore') }}">Explore</a></button>
   {% endif %}
 {% endblock %}
 

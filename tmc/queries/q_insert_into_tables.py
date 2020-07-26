@@ -14,6 +14,8 @@ def insert_into_tables(table, element_id, element_name, element_description):
 
     g.db = get_db()
     query='INSERT INTO {} ({}, {}, {}, {}) VALUES (?, ?, ?, ?)'.format(table, 'author_id', table_id, table_name, table_description)
+
     g.db.execute(query, (author_id, element_id, element_name, element_description))
     g.db.commit()
+    
     return redirect(url_for('maps.completed'))
