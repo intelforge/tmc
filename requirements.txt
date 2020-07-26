@@ -1,6 +1,6 @@
 flask
 functools
-sqlite3
 click
 attackcti
 IPython
+six>=1.13.0
