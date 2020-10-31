@@ -9,7 +9,8 @@ def insert_tactic_x_technique(tactic_id, technique_id):
     g.db = get_db()
     query='INSERT INTO {} ({}, {}, {}) VALUES (?, ?, ?)'.format('tactics_x_techniques', 'author_id', 'tactic_id', 'technique_id')
 
-    g.db.execute(query, (author_id, tactic_id, technique_id))
+    result = g.db.execute(query, (author_id, tactic_id, technique_id))
     g.db.commit()
+    element_id = result.lastrowid
 
-    return redirect(url_for('maps.completed'))
+    return element_id

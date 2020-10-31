@@ -3,14 +3,14 @@ from tmc.db import get_db, make_dicts
 from attackcti import attack_client
 from IPython import embed
 
-# Get list of all tools available in the database.
-def get_tools():
+# Get list of all industries available in the database by name.
+def get_industries_names():
 
     db = get_db()
     try:
-        db.row_factory = make_dicts
+        db.row_factory = lambda cursor, row: row[0]
         query = db.execute(
-            'SELECT tool_id as ID, tool_name as Name, tool_description as Description, tool_identifiers as Identifiers FROM tools ORDER BY Name').fetchall()
+            'SELECT industry_name as Industry FROM industries ORDER BY industry_name ASC').fetchall()
         return query
     except TypeError:
         #embed()

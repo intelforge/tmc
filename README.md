@@ -35,7 +35,7 @@ flask run
 
 Once the server has started, access the application through localhost:5555. You will need to register an user and log in in order to use the application.
 
-To load the database with the data from [ATT&CK](https://attack.mitre.org/) access the following path. Please be patiente, since this operation really takes a while:
+To load the database with the data from [ATT&CK](https://attack.mitre.org/) access the following path. Please be patiente, since this operation **really takes a while**:
 
 ```
 localhost:5555/first-time
@@ -74,4 +74,4 @@ flask run -p <number> -h 0.0.0.0
 - [ ] Download TMC mapping from Navigator as SVG
 - [ ] Export as CSV function
 - [ ] Edit database screens
-- [ ] Dockerize project
+- [ ] Dockerize project 

@@ -3,7 +3,7 @@ from tmc.db import get_db
 from attackcti import attack_client
 from IPython import embed
 
-# Get list of all adversaries available in the database.
+# Get list of all adversaries available in the database by name.
 def get_adversaries_names():
 
     db = get_db()

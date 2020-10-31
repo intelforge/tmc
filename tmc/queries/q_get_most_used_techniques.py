@@ -3,7 +3,7 @@ from tmc.db import get_db, make_dicts
 from attackcti import attack_client
 from IPython import embed
 
-# Get list of all adversaries available in the database.
+# Get list of most used techniques
 def get_most_used_techniques():
 
     db = get_db()

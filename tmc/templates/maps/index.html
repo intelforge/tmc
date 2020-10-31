@@ -46,6 +46,13 @@
               <option value="{{ name }}">{{ name }}</option>
             {% endfor %}
         </select>
+
+        <label for="title">Select related Industry</label>
+        <select>
+            {% for name in industries_list %}
+              <option value="{{ name }}">{{ name }}</option>
+            {% endfor %}
+        </select>
       </div>
     </div>
   </form>
