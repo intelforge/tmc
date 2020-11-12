@@ -16,6 +16,7 @@ class Adversary():
 
     def __init__(self, element):
         super().__init__()
+        self.related_tools = lift.get_software_used_by_group(element)
         self.attack_identifiers = ''
         self.attack_id = element['external_references'][0]['external_id']
         self.adversary_name = element['name']
@@ -32,7 +33,7 @@ class Adversary():
 
         except KeyError:
             self.attack_identifiers = ''
-        self.related_tools = lift.get_software_used_by_group(element)
+
         self.adversary_id = insert_adversary(self.attack_id, self.adversary_name, self.adversary_description, self.attack_identifiers)
 
 
@@ -188,7 +189,7 @@ def insert_subtechnique(attack_id, subtechnique_name, subtechnique_description):
 # Adding ATT&CK Adversaries
 def insert_adversary(attack_id, adversary_name, adversary_description, attack_identifiers):
 
-    insert_into_table = q.q_insert_adversary_into_tables.insert_adversary_into_tables('adversaries', adv.attack_id, adv.adversary_name, adv.adversary_description, adv.attack_identifiers)
+    insert_into_table = q.q_insert_adversary_into_tables.insert_adversary_into_tables('adversaries', attack_id, adversary_name, adversary_description, attack_identifiers)
     print('Created adversary %s' % adversary_name)
     return insert_into_table
 
@@ -206,14 +207,14 @@ def insert_toolxtec(tool_name, tool_id, techniques_used):
 
     for element in techniques_used:
 
-        technique_id = element['external_references'][0]['external_id']
+        technique_attack_id = element['external_references'][0]['external_id']
 
-        if '.' in technique_id:
-            subtechnique_id = q.q_get_element_id.get_element_id('subtechniques', 'subtechnique_id', technique_id)
-            result = q.q_insert_tool_x_techn.insert_tool_x_techn('tools_x_techniques', tool_id, subtechnique_id)
+        if '.' in technique_attack_id:
+            subtechnique_id = q.q_get_element_id.get_element_id('subtechniques', 'subtechnique_id', technique_attack_id)
+            result = q.q_insert_tool_x_subtechn.insert_tool_x_subtechn('tools_x_subtechniques', tool_id, subtechnique_id)
     
         else:
-            q.q_get_element_id.get_element_id('techniques', 'technique_id', technique_id)
+            technique_id = q.q_get_element_id.get_element_id('techniques', 'technique_id', technique_attack_id)
             result = q.q_insert_tool_x_techn.insert_tool_x_techn('tools_x_techniques', tool_id, technique_id)
         print('Created relationship for %s' % tool_name)
     return True
@@ -236,11 +237,11 @@ def insert_tacxtec(technique_id, related_tactic):
 # Insert relation insert_advxtool
 def insert_advxtool(adversary_id, related_tools):
     
-    for tool in tools_used:
-        #check what tools_used brings
-        tool_attack_id = q.q_get_element_id.get_element_id('tools', 'attack_id', tool_attack_id)
+    for tool in related_tools:
+        tool_attack_id = tool['external_references'][0]['external_id']
+        tool_id = q.q_get_element_id.get_element_id('tools', 'tool_id', tool_attack_id)
 
-        result = q.q_insert_insert_adversary_x_tool.insert_insert_adversary_x_tool(adversary_id, tool_attack_id)
+        result = q.q_insert_adversary_x_tool.insert_adversary_x_tool(adversary_id, tool_id)
         print('Created adversary per tool relationship')    
     return True
 
