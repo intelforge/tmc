@@ -22,38 +22,50 @@
 
 <!--Search by Adversary-->
 {% block content %}
-  <form method="post">
-    <div class="form-group row align-items-end">
-      <div class="col-5">
-        <label for="title">Insert URL</label>
-        <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>
-      </div>
+  <form action="/tram-interaction" method="post">
 
-      <div class="col-5">
-        <input type="submit" class="btn btn-dark" value="Map!">
-      </div>
-    </div>
-  </form>
-
-<!--Search by Tool-->
-  <form method="post">
     <div class="form-group row align-items-end">
       <div class="col-5">
         <label for="title">Select related Adversary</label>
          <!-- Make this an editable input a dropdown menu with a select to the adversaries in the database -->
-        <select>
+        <select name='adversary'>
             {% for name in adversaries_list %}
               <option value="{{ name }}">{{ name }}</option>
             {% endfor %}
         </select>
 
+        <label for="title">Select related Tool</label>
+        <select name='tool'>
+            {% for name in tools_list %}
+              <option value="{{ name }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+
         <label for="title">Select related Industry</label>
-        <select>
+        <select name='industry'>
             {% for name in industries_list %}
               <option value="{{ name }}">{{ name }}</option>
             {% endfor %}
         </select>
+
+        <label for="title">Event name</label>
+        <input name="event_name" class="form-control" id="event_name" value="{{ request.form['event_name'] }}" required>
+
+        <label for="title">Event description</label>
+        <input name="event_description" class="form-control" id="event_description" value="{{ request.form['event_description'] }}" required>
+        
+        <div class="form-group row align-items-end">
+          <div class="col-10">
+            <label for="title">Insert URL</label>
+            <input name="url" class="form-control" id="url" value="{{ request.form['url'] }}" required>
+          </div>
+
+          <div class="col-2">
+            <input type="submit" class="btn btn-dark" value="Map!">
+          </div>
+        </div>
+
       </div>
-    </div>
+      </div>
   </form>
 {% endblock %}

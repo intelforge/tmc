@@ -3,4 +3,6 @@ functools
 click
 attackcti
 IPython
-six>=1.13.0
+six==1.15.0
+stix2==2.0.2
+taxii2-client==2.2.1

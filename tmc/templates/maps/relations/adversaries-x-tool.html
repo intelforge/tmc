@@ -25,14 +25,14 @@
           <table class="table">
             <thead>
               <tr>
-              {% for element in adversaries_th %}
+              {% for element in adversaries_x_tool_th %}
                   <th scope="col">{{ element }}</th>
               {% endfor %}
                   <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
-            {% for element in adversaries %}
+            {% for element in adversaries_x_tool %}
               <tr>
               {% for key, value in element.items() %}
                 <td scope="row">{{ value }}</td>

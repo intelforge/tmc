@@ -14,13 +14,53 @@ import tmc.processor as processor
 bp = Blueprint('maps', __name__)
 
 # Homepage
-@bp.route('/')
+@bp.route('/', methods=["GET", "POST"])
 def index():
 
     adversaries_list = q.q_get_adversaries_names.get_adversaries_names()
+    tools_list = q.q_get_tools_names.get_tools_names()
     industries_list = q.q_get_industries_names.get_industries_names()
 
-    return render_template('maps/index.html', adversaries_list=adversaries_list, industries_list=industries_list)
+    return render_template('maps/index.html', adversaries_list=adversaries_list, tools_list=tools_list, industries_list=industries_list)
+
+@bp.route('/tram-interaction', methods=["GET", "POST"])
+def tram_mapping():
+
+    if request.method == "POST":
+
+        req = request.form
+        adversary = req['adversary']
+        tool = req['tool']
+        event_name = req['event_name']
+        event_description = req['event_description']
+        industry = req['industry']
+        url = req['event_description']
+
+    event = insert_new_event()
+    adv_x_event=insert_adversary_x_event(adversary, event)
+    get_techniques = sent_url_to_tram()
+    tool_x_techniques = insert_tool_x_techniques()
+
+    return render_template('maps/index.html')
+
+def insert_new_event():
+
+    return True
+
+
+def insert_adversary_x_event(adversary, event):
+
+    return True
+
+
+def sent_url_to_tram():
+
+    return True
+
+
+def insert_tool_x_techniques():
+
+    return True
 
 # List all posible actions to display data
 @bp.route('/explore')
@@ -199,9 +239,16 @@ def create_campaign():
 @bp.route('/create-adversary', methods=('GET', 'POST'))
 @login_required
 def create_adversary():
-    if request.method == 'POST':
+    
+    countries_list = q.q_get_countries.get_countries()
+
+
+    if request.method == "POST":
+        adversary_id = request.form['id']
         adversary_name = request.form['name']
         adversary_description = request.form['description']
+        adversary_identifiers = request.form['identifiers']
+        adversary_origin = request.form['origin']
         error = None
 
         if not adversary_name:
@@ -219,15 +266,40 @@ def create_adversary():
             db.commit()
             return redirect(url_for('maps.create_adversary'))
 
-    return render_template('maps/creation/create-adversary.html')
+    return render_template('maps/creation/create-adversary.html', countries_list=countries_list)
 
 
 # Creates the new tool in the database
 @bp.route('/create-tool', methods=('GET', 'POST'))
 @login_required
 def create_tool():
+    techniques_list = q.q_get_techniques.get_techniques()
+    subtechniques_list = q.q_get_subtechniques.get_subtechniques()
 
-    return render_template('maps/creation/create-tool.html')
+    if request.method == "POST":
+        tool_id = request.form['id']
+        tool_name = request.form['name']
+        tool_description = request.form['description']
+        technique = request.form['technique']
+        subtechnique = request.form['subtechnique']
+        error = None
+
+        if not adversary_name:
+            error = 'Adversary name is required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'INSERT INTO adversaries (adversary_name, adversary_description, author_id)'
+                ' VALUES (?, ?, ?)',
+                (title, body, g.user['id'])
+            )
+            db.commit()
+            return redirect(url_for('maps.create_adversary'))
+
+    return render_template('maps/creation/create-tool.html', techniques_list=techniques_list, subtechniques_list=subtechniques_list)
 
 
 # Creates the new technique in the database
@@ -235,19 +307,71 @@ def create_tool():
 @login_required
 def create_technique():
 
-    return render_template('maps/creation/create-technique.html')
+    tactics_list = q.q_get_tactics.get_tactics()
+
+
+    if request.method == "POST":
+
+        technique_id = request.form['id']
+        technique_name = request.form['name']
+        technique_description = request.form['description']
+        technique_tactic = request.form['tactic']
+        error = None
+
+        if not adversary_name:
+            error = 'Adversary name is required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'INSERT INTO adversaries (adversary_name, adversary_description, author_id)'
+                ' VALUES (?, ?, ?)',
+                (title, body, g.user['id'])
+            )
+            db.commit()
+            return redirect(url_for('maps.create_adversary'))
+
+
+    return render_template('maps/creation/create-technique.html', tactics_list=tactics_list)
 
 
 # Creates the new subtechnique in the database
 @bp.route('/create-subtechnique', methods=('GET', 'POST'))
 def create_subtechnique():
 
+    techniques_list = q.q_get_techniques.get_techniques()
+    
+    if request.method == "POST":
+
+        subtechnique_id = request.form['id']
+        subtechnique_name = request.form['name']
+        subtechnique_description = request.form['description']
+        subtechnique_technique = request.form['techniques']
+        error = None
+
+        if not adversary_name:
+            error = 'Adversary name is required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            db.execute(
+                'INSERT INTO adversaries (adversary_name, adversary_description, author_id)'
+                ' VALUES (?, ?, ?)',
+                (title, body, g.user['id'])
+            )
+            db.commit()
+            return redirect(url_for('maps.create_adversary'))
+
     #  insert_into_table = q.q_insert_into_tables.insert_into_tables('subtechniques', subtechnique_related, subtechnique_name, subtechnique_description, subtechnique_related_technique)
     # subtechnique_id=q.q_get_element_id.get_element_id('subtechniques', 'subtechnique_id', subtechnique_attack_id)
 
     # processor.techniques_x_subtechniques(related_technique, subtechnique_id)
 
-    return render_template('maps/creation/create-subtechnique.html')
+    return render_template('maps/creation/create-subtechnique.html', techniques_list=techniques_list)
 
 
 # Loading ATT&CK to DB for the first time

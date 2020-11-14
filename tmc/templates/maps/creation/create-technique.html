@@ -7,15 +7,30 @@
 {% block content %}
   <form method="post">
   	<div class="form-group row">
-  		<div class="col-7">
+      <div class="col-3">
+        <label for="title">ID</label>
+        <input name="id" class="form-control" id="id" value="{{ request.form['name'] }}" required>
+      </div>
+
+  		<div class="col-5">
 		    <label for="title">Name</label>
 		    <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>
   		</div>
 
-      	<div class="col-9">
+      <div class="col-5">
+        <label for="title">Related tactic</label>
+        <select name='tactic'>
+            {% for name in tactics_list %}
+              <option value="{{ name }}">{{ name['Name'] }}</option>
+            {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-9">
       		<label for="description">Description</label>
     		<textarea name="description" class="form-control" id="description">{{ request.form['description'] }}</textarea>
   		</div>
+
 
       	<div class="col-7">
     		<input type="submit" class="btn btn-dark" value="Save">

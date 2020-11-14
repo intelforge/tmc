@@ -14,7 +14,9 @@ def get_adversaries_x_technique():
                 FROM adversaries a \
                 inner join adversaries_x_tools axt on axt.adversary_id=a.id \
                 inner join tools_x_techniques txt on txt.tool_id=axt.tool_id \
+                inner join tools_x_subtechniques txst on txst.tool_id=axt.tool_id \
                 inner join techniques t on t.id=txt.technique_id \
+                inner join subtechniques s on s.id=txst.subtechnique_id \
                 ORDER BY a.adversary_name').fetchall()
         return query
     except TypeError:

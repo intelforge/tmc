@@ -8,7 +8,8 @@ from IPython import embed
 import tmc.queries as q
 
 # Global variable
-lift = attack_client()
+lift = ''
+#lift = attack_client()
 
 # Classes
 
