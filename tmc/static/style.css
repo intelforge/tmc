@@ -20,12 +20,10 @@ h2, p {
 	color: #000;
 }
 
-
-
 .container:not(nav){
 	border: solid 1px #000;
+	margin-bottom: 15%;
 }
-
 
 
 /***************
@@ -112,5 +110,22 @@ div.container {
 
 table {
 	margin-top: 3%;
+}
+
+
+.pagination-page-info {
+    padding: .6em;
+    padding-left: 0;
+    width: 40em;
+    margin: .5em;
+    margin-left: 0;
+    font-size: 12px;
+}
+.pagination-page-info b {
+    color: black;
+    background: #6aa6ed;
+    padding-left: 2px;
+    padding: .1em .25em;
+    font-size: 150%;
 }
 

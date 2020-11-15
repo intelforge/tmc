@@ -3,14 +3,15 @@ from tmc.db import get_db, make_dicts
 from attackcti import attack_client
 from IPython import embed
 
-# Get list of all campaigns available in the database.
-def get_campaigns():
+# Get list of all adversaries per event available in the database.
+def get_adversaries_x_event():
 
     db = get_db()
     try:
         db.row_factory = make_dicts
+        #db.row_factory = lambda cursor, row: {row: row[0]}
         query = db.execute(
-            'SELECT campaign_id, campaign_name, campaign_description, campaign_industry FROM campaigns').fetchall()
+            'SELECT adversary_id as ID, adversary_name as Name, adversary_identifiers as Identifiers, adversary_description as Description FROM adversaries ORDER BY Name').fetchall()
         return query
     except TypeError:
         #embed()

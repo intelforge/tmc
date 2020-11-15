@@ -1,6 +1,7 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
+from flask_paginate import Pagination, get_page_args
 from werkzeug.exceptions import abort
 
 from tmc.auth import login_required
@@ -17,9 +18,9 @@ bp = Blueprint('maps', __name__)
 @bp.route('/', methods=["GET", "POST"])
 def index():
 
-    adversaries_list = q.q_get_adversaries_names.get_adversaries_names()
-    tools_list = q.q_get_tools_names.get_tools_names()
-    industries_list = q.q_get_industries_names.get_industries_names()
+    adversaries_list = q.q_get_adversaries.get_adversaries()
+    tools_list = q.q_get_tools.get_tools()
+    industries_list = q.q_get_industries.get_industries()
 
     return render_template('maps/index.html', adversaries_list=adversaries_list, tools_list=tools_list, industries_list=industries_list)
 
@@ -69,131 +70,178 @@ def explore():
     return render_template('maps/explore.html') 
 
 
+def get_paginated(element, offset=0, per_page=10):
+    return element[offset: offset + per_page]
+
+def calculate_pagination(element):
+
+    total = len(element)
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    pagination_element = get_paginated(element, offset=offset, per_page=per_page)
+    pagination = Pagination(page=page, per_page=per_page, total=total, css_framework='bootstrap4')
+
+    return pagination_element, page, per_page, offset, pagination
+
 # Displays all adversaries in the DB
 @bp.route('/explore-adversaries')
 def explore_adversaries():
 
+    title='Adversaries'
     adversaries = q.q_get_adversaries.get_adversaries()
-    adversaries_th = adversaries[0].keys() 
+    adversaries_th = adversaries[0].keys()
+    pagination_adversaries, page, per_page, offset, pagination = calculate_pagination(adversaries)
 
-    return render_template('maps/explore/explore-adversaries.html', adversaries=adversaries, adversaries_th=adversaries_th)
+    return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_th, paginated_element=pagination_adversaries, page=page, per_page=per_page, pagination=pagination)
 
 
-# Displays all campaigns in the DB
-@bp.route('/explore-campaigns')
-def explore_campaigns():
+# Displays all events in the DB
+@bp.route('/explore-events')
+def explore_events():
 
-    # campaigns = q.q_get_campaigns.get_campaigns()
-    # campaigns_th = campaigns[0].keys() 
+    title='Events'
+    events = q.q_get_events.get_events()
+    events_th = events[0].keys() #add test for no elements
 
-    return render_template('maps/explore/explore-campaigns.html') #, campaigns=campaigns, campaigns_th=campaigns_th)
+    pagination_events, page, per_page, offset, pagination = calculate_pagination(events)
+
+    return render_template('maps/explore/explore-element.html', title=title, events=events, element_th=events_th, paginated_element=pagination_events, page=page, per_page=per_page, pagination=pagination)
 
 
 # Displays all tools in the DB
 @bp.route('/explore-tools')
 def explore_tools():
 
+    title='Tools'
     tools = q.q_get_tools.get_tools()
     tools_th = tools[0].keys()   
 
-    return render_template('maps/explore/explore-tools.html', tools=tools, tools_th=tools_th)
+    pagination_tools, page, per_page, offset, pagination = calculate_pagination(tools)
+
+    return render_template('maps/explore/explore-element.html', title=title, tools=tools, element_th=tools_th, paginated_element=pagination_tools, page=page, per_page=per_page, pagination=pagination)
 
 
 # Displays all technique in the DB
 @bp.route('/explore-techniques')
 def explore_techniques():
 
+    title='Techniques'
     techniques = q.q_get_techniques.get_techniques()
-    techniques_th = techniques[0].keys()    
+    techniques_th = techniques[0].keys()   
 
-    return render_template('maps/explore/explore-techniques.html', techniques=techniques, techniques_th=techniques_th)
+    pagination_techniques, page, per_page, offset, pagination = calculate_pagination(techniques)
+
+    return render_template('maps/explore/explore-element.html', title=title, techniques=techniques, element_th=techniques_th, paginated_element=pagination_techniques, page=page, per_page=per_page, pagination=pagination)
 
 
 # Displays all subtechniques in the DB
 @bp.route('/explore-subtechniques')
 def explore_subtechniques():
 
+    title='Subtechniques'
     subtechniques = q.q_get_subtechniques.get_subtechniques()
     subtechniques_th = subtechniques[0].keys()  
 
-    return render_template('maps/explore/explore-subtechniques.html', subtechniques=subtechniques, subtechniques_th=subtechniques_th)
+    pagination_subtechniques, page, per_page, offset, pagination = calculate_pagination(subtechniques)
+
+    return render_template('maps/explore/explore-element.html', title=title, techniques=subtechniques, element_th=subtechniques_th, paginated_element=pagination_subtechniques, page=page, per_page=per_page, pagination=pagination)
 
 
 # DB Analysis Screens
 
-# Display Adversaries per campaign
-@bp.route('/adversaries-x-campaign')
-def get_adversaries_x_campaign():  
+# Display Adversaries per event
+@bp.route('/adversaries-x-event')
+def get_adversaries_x_event():  
 
-    return render_template('maps/relations/adversaries-x-campaign.html')
+    return render_template('maps/relations/adversaries-x-event.html')
 
 
 # Display Adversaries per suspected origin
 @bp.route('/adversaries-x-sorigin')
-def get_adversaries_x_sorigin():  
+def get_adversaries_x_sorigin():
 
-    return render_template('maps/relations/adversaries-x-sorigin.html')
+    title='Adversaries Suspected Origin'
+    adversaries_x_sorigin = q.q_get_adversaries_sorigin.get_adversaries_sorigin()
+    adversaries_x_sorigin_th = adversaries_x_sorigin[0].keys()
+
+    pagination_adversaries_x_sorigin, page, per_page, offset, pagination = calculate_pagination(adversaries_x_sorigin)
+
+    return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=pagination_adversaries_x_sorigin, page=page, per_page=per_page, pagination=pagination)
 
 
 # Display Adversaries per industry
-@bp.route('/adversaries-per-industry')
+@bp.route('/adversaries-x-industry')
 def get_adversaries_x_industry():    
 
-    return render_template('maps/relations/adversaries-per-industry.html')
+        return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=pagination_adversaries_x_sorigin, page=page, per_page=per_page, pagination=pagination)
 
 
-# Display Campaigns by industry
-@bp.route('/campaigns-x-industry')
-def get_campaigns_x_industry():
+# Display events by industry
+@bp.route('/events-x-industry')
+def get_events_x_industry():
 
-    return render_template('maps/relations/campaigns-x-industry.html')
+    return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=pagination_adversaries_x_sorigin, page=page, per_page=per_page, pagination=pagination)
 
 
 # Display Techniques per industry
 @bp.route('/techniques-per-industry')
 def get_techniques_per_industry(): 
 
-    return render_template('maps/relations/techniques-x-industry.html')
+    return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=pagination_adversaries_x_sorigin, page=page, per_page=per_page, pagination=pagination)
 
 
-# Display Adversaries per tool ---------- This query needs an OFFSET
+# Display Adversaries per tool
 @bp.route('/adversaries-x-tool')
 def get_adversaries_x_tool(): 
+    title='Adversaries per tool'
 
     adversaries_x_tool = q.q_get_adversaries_x_tool.get_adversaries_x_tool()
-    adversaries_x_tool_th = adversaries_x_tool[0].keys()  
+    adversaries_x_tool_th = adversaries_x_tool[0].keys()
 
-    return render_template('maps/relations/adversaries-x-tool.html', adversaries_x_tool=adversaries_x_tool, adversaries_x_tool_th=adversaries_x_tool_th)
+    pagination_adversaries_x_tool, page, per_page, offset, pagination = calculate_pagination(adversaries_x_tool)
+
+    return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_tool_th, paginated_element=pagination_adversaries_x_tool, page=page, per_page=per_page, pagination=pagination)
 
 
 # Display Adversaries per technique
 @bp.route('/adversaries-x-technique')
 def get_adversaries_x_technique():
 
-    adversaries_x_technique = q.q_get_adversaries_x_technique.get_adversaries_x_technique()
-    adversaries_x_technique_th = adversaries_x_technique[0].keys()  
+    title = 'Adversaries per technique'
 
-    return render_template('maps/relations/adversaries-x-technique.html', adversaries_x_technique=adversaries_x_technique, adversaries_x_technique_th=adversaries_x_technique_th)
+    adversaries_x_technique = q.q_get_adversaries_x_technique.get_adversaries_x_technique()
+    adversaries_x_technique_th = adversaries_x_technique[0].keys()
+
+    pagination_adversaries_x_technique, page, per_page, offset, pagination = calculate_pagination(adversaries_x_technique)
+
+    return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_technique_th, paginated_element=pagination_adversaries_x_technique, page=page, per_page=per_page, pagination=pagination)
 
 
 # Display Tools per techniques ---------- This query needs an OFFSET
 @bp.route('/tools-x-techniques')
 def get_tools_x_techniques():
 
+    title = 'Tools per technique'
+
     tools_x_techniques = q.q_get_tools_x_techniques.get_tools_x_techniques()
     tools_x_techniques_th = tools_x_techniques[0].keys()  
 
-    return render_template('maps/relations/tools-x-technique.html', tools_x_techniques=tools_x_techniques, tools_x_techniques_th=tools_x_techniques_th)
+    pagination_tools_x_techniques, page, per_page, offset, pagination = calculate_pagination(tools_x_techniques)
+
+    return render_template('maps/explore/explore-element.html', title=title, element_th=tools_x_techniques_th, paginated_element=pagination_tools_x_techniques, page=page, per_page=per_page, pagination=pagination)
 
 
 # Display Most used techniques
 @bp.route('/most-used-technique')
 def get_most_used_techniques():    
 
+    title = 'Most used techniques'
+
     most_used_techniques = q.q_get_most_used_techniques.get_most_used_techniques()
     most_used_techniques_th = most_used_techniques[0].keys()
 
-    return render_template('maps/relations/most-used-technique.html', most_used_techniques=most_used_techniques, most_used_techniques_th=most_used_techniques_th)
+    pagination_most_used_techniques, page, per_page, offset, pagination = calculate_pagination(most_used_techniques)
+
+    return render_template('maps/explore/explore-element.html', title=title, element_th=most_used_techniques_th, paginated_element=pagination_most_used_techniques, page=page, per_page=per_page, pagination=pagination)
 
 
 # Edit DB functions
@@ -225,10 +273,10 @@ def open_in_nav():
     return True
 
 
-# Creates the new campaign in the database
-@bp.route('/create-campaign', methods=('GET', 'POST'))
+# Creates the new event in the database
+@bp.route('/create-events', methods=('GET', 'POST'))
 @login_required
-def create_campaign():
+def create_event():
 
     return render_template('maps/creation/create-adversary.html')
 

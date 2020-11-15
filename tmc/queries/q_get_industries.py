@@ -10,7 +10,7 @@ def get_industries():
     try:
         db.row_factory = make_dicts
         query = db.execute(
-            'SELECT industry_id as ID, industry_name as Industry, FROM industries ORDER BY industry_name ASC').fetchall()
+            'SELECT id, industry_name as Industry FROM industries ORDER BY industry_name ASC').fetchall()
         return query
     except TypeError:
         #embed()

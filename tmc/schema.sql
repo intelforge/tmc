@@ -31,7 +31,7 @@ CREATE TABLE adversaries (
   adversary_name TEXT NOT NULL,
   adversary_description TEXT NOT NULL,
   adversary_identifiers TEXT,
-  adversay_sorigin TEXT,
+  adversary_sorigin TEXT,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 

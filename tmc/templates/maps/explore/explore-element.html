@@ -5,7 +5,7 @@
   <div class="create-menu">
     <ul>
       <li> <a class="action" href="{{ url_for('maps.create_adversary') }}">Create adversary</a></li>
-     <!-- <li><a href="{{ url_for('maps.create_campaign') }}">Create campaign</a></li> -->
+     <!-- <li><a href="{{ url_for('maps.create_event') }}">Create event</a></li> -->
       <li><a href="{{ url_for('maps.create_tool') }}">Create tool</a></li>
       <li><a href="{{ url_for('maps.create_technique') }}">Create techinque</a></li>
       <li><a href="{{ url_for('maps.create_subtechnique') }}">Create subtechnique</a></li>
@@ -21,18 +21,19 @@
   <form method="post">
     <div class="form-group row align-items-end">
       <div class="col-12">
-        <h3 for="title">Tools per technique</h3>
+        <h3 for="title">{{ title }}</h3>
+        {{ pagination.info }}
           <table class="table">
             <thead>
               <tr>
-              {% for element in tools_x_techniques_th %}
+              {% for element in element_th %}
                   <th scope="col">{{ element }}</th>
               {% endfor %}
                   <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
-            {% for element in tools_x_techniques %}
+            {% for element in paginated_element %}
               <tr>
               {% for key, value in element.items() %}
                 <td scope="row">{{ value }}</td>
@@ -47,6 +48,7 @@
             {% endfor %}
             </tbody>
           </table>
+          {{ pagination.links }}
       </div>
     </div>
   </form>
