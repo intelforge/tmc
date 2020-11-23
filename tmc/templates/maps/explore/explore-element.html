@@ -22,8 +22,7 @@
     <div class="form-group row align-items-end">
       <div class="col-12">
         <h3 for="title">{{ title }}</h3>
-        {{ pagination.info }}
-          <table class="table">
+          <table class="table display" id="explore_results">
             <thead>
               <tr>
               {% for element in element_th %}
@@ -36,10 +35,11 @@
             {% for element in paginated_element %}
               <tr>
               {% for key, value in element.items() %}
-                <td scope="row">{{ value }}</td>
+                <td scope="row" name="{{ key }}">{{ value }}</td>
               {% endfor %}
                 <td scope="row" class="col-2">
-                    <a href="../edit.html"><i class="fas fa-edit fa-lg" title="Edit"></i></a>
+
+                    <a href="#" onclick="getElement()"><i class="fas fa-edit fa-lg" title="Edit"></i></a>
                     <a href="/svg"><i class="fas fa-file-download fa-lg" title="Download as SVG"></i></a>
                     <a href="/export"><i class="fas fa-file-export fa-lg" title="Export as CSV"></i></a>
                     <a href="/open-in-nav"><i class="fas fa-external-link-square-alt fa-lg" title="Open in navigator"></i></a>
@@ -48,9 +48,24 @@
             {% endfor %}
             </tbody>
           </table>
-          {{ pagination.links }}
       </div>
     </div>
   </form>
 
+<script type="text/javascript">
+  $(function(){
+  // Change first column background color.
+  $("#firstColumn").click(function(){
+  $("table tr td:first-child").css("background-color","#ff0000");
+});
+// Change second column background color.
+$("#secondColumn").click(function(){
+  $("table tr td:nth-child(2)").css("background-color","#ff0000");
+
+
+<script type="text/javascript">
+function getElement() {
+  alert("I am an alert box!");
+}
+</script>
 {% endblock %}
