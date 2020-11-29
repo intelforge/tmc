@@ -42,7 +42,7 @@
 
 <nav class='container n1'>
   <a href="/" style="color: #000">
-  <img src="../static/glasses.png" alt='glasses logo'>
+  <img src="../static/glasses.png" alt='glasses logo' id="logo">
   <h1 style="font-size: 2.3em;">Threat Mapping Catalogue</h1>
   </a>
   <ul>
@@ -71,30 +71,38 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+   
     var table = $('#explore_results').DataTable();
- 
+    var anchor = document.querySelectorAll('.disabled');
+
+    var loc = location.href;
+    
     $('#explore_results tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {
             $(this).removeClass('selected');
+            for (var i = 0; i < anchor.length; i++) {
+              anchor[i].classList.add('disabled');
+            }
         }
         else {
             table.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
+            for (var i = 0; i < anchor.length; i++) {
+              anchor[i].classList.remove('disabled');
+              
+            }
         }
     } );
 
 } );
 
-</script>
-
-
-<script type="text/javascript">
-function getElement() {
-    var urls = [];
-    $('#explore_results tr').each(function () {
-        urls.push($(this).find('td').eq(1).text());
-    });
-
-    alert(urls);
+function clickRowListener(anchor) {
+    var table = $('#explore_results').DataTable();
+    var headers = document.querySelectorAll("th");
+    var element_value = table.$('tr.selected').find('td').eq(1).text();
+    var element_name = headers[1].innerText;
+    var atb = anchor.getAttribute('title');
+    location.replace = atb + "/" + element_name.toLowerCase() + "/" + element_value.toLowerCase();
+    
 }
 </script>

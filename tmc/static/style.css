@@ -25,7 +25,11 @@ h2, p {
 	margin-bottom: 15%;
 }
 
-
+.error_bckg {
+	width:80%; 
+	display: block; 
+	margin: 0 auto;
+}
 /***************
 #Nav
 ****************/
@@ -35,7 +39,7 @@ nav {
 
 }
 
-img	{
+#logo {
 	width: 5%;
 }
 
@@ -103,9 +107,14 @@ div.container {
 	color: #fff;
 }
 
-.row a {
+.row a, .row a.disabled {
 	color: #000;
 	margin-right: 3%;
+}
+
+.row a.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 table {

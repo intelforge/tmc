@@ -3,7 +3,6 @@ from flask import (
 )
 from flask_paginate import Pagination, get_page_args
 from werkzeug.exceptions import abort
-
 from tmc.auth import login_required
 from tmc.db import get_db
 from attackcti import attack_client
@@ -11,6 +10,7 @@ from IPython import embed
 import tmc.queries as q
 from tmc.queries import *
 import tmc.processor as processor
+import datetime
 import json
 
 bp = Blueprint('maps', __name__, template_folder='templates')
@@ -225,12 +225,45 @@ def create_event():
 
 # DB INTERACTION FROM FRONT-END
 
-@bp.route('/edit/<title>/<element>', methods=('GET', 'POST'))
-def edit_element(): 
+@bp.route('/edit/adversary/<element>', methods=('GET', 'POST'))
+def render_edit_adversary(element):
+    
+    countries_list = q.q_get_countries.get_countries()
+    request_adversary=q.q_get_adversaries.get_adversaries(element)
+    request_adversary_techniques=q.q_get_adversaries_techniques.get_adversaries_techniques('110')
+    adversary_techniques_th = request_adversary_techniques[0].keys()
 
+    if request_adversary is False:
+        return render_template('maps/404.html')
+    else:
+        return render_template('maps/creation/create-adversary.html', request_adversary_techniques=request_adversary_techniques, element_th=adversary_techniques_th, request_adversary=request_adversary, countries_list=countries_list)
 
+@bp.route('/edit-adversary', methods=('GET', 'POST'))
+@login_required
+def edit_adversary():
+    try:
+        if request.method == 'POST':
+            edited = request.form
 
-    return render_template('maps/creation/create-adversary.html', countries_list=countries_list)
+            db_id = edited['db_id']
+            adversary_id = edited['adversary_id']
+            adversary_name = edited['adversary_name']
+            adversary_identifiers = edited['adversary_identifiers']
+            adversary_sorigin = edited['sorigin']
+            adversary_description = edited['description']
+            updated_date = datetime.datetime.now()
+
+            db = get_db()
+            db.execute(
+                'UPDATE adversaries SET adversary_id=?, adversary_name=?, adversary_description=?, adversary_identifiers=?, adversary_sorigin=?, updated_date=?, updated_by=? WHERE id=?',
+                (adversary_id, adversary_name, adversary_description, adversary_identifiers, adversary_sorigin, updated_date, g.user['id'], db_id,)
+            )
+            db.commit()
+
+            return redirect('/explore-adversaries') 
+    except:
+        return render_template('maps/404.html')
+
 
 @bp.route('/create-adversary', methods=('GET', 'POST'))
 @login_required
@@ -240,11 +273,11 @@ def create_adversary():
 
 
     if request.method == "POST":
-        adversary_id = request.form['id']
-        adversary_name = request.form['name']
+        adversary_id = request.form['adversary_id']
+        adversary_name = request.form['adversary_name']
         adversary_description = request.form['description']
-        adversary_identifiers = request.form['identifiers']
-        adversary_origin = request.form['origin']
+        adversary_identifiers = request.form['adversary_identifiers']
+        adversary_origin = request.form['sorigin']
         error = None
 
         if not adversary_name:
@@ -390,14 +423,6 @@ def first_time():
     processor.get_elements()
 
     return render_template('maps/completed.html')
-
-
-# Edit DB functions
-@bp.route('/edit/<element>')
-def edit_database(): 
-
-    return render_template('maps/edit.html')
-
 
 # Export Results
 @bp.route('/export')

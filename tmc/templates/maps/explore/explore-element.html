@@ -32,17 +32,16 @@
               </tr>
             </thead>
             <tbody>
-            {% for element in paginated_element %}
+            {% for element in request_adversary_techniques %}
               <tr>
-              {% for key, value in element.items() %}
+              {% for key, value in request_adversary_techniques.items() %}
                 <td scope="row" name="{{ key }}">{{ value }}</td>
               {% endfor %}
                 <td scope="row" class="col-2">
-
-                    <a href="#" onclick="getElement()"><i class="fas fa-edit fa-lg" title="Edit"></i></a>
-                    <a href="/svg"><i class="fas fa-file-download fa-lg" title="Download as SVG"></i></a>
-                    <a href="/export"><i class="fas fa-file-export fa-lg" title="Export as CSV"></i></a>
-                    <a href="/open-in-nav"><i class="fas fa-external-link-square-alt fa-lg" title="Open in navigator"></i></a>
+                    <a href="" onclick="clickRowListener(this)" class="disabled" title="/edit" method = POST><i class="fas fa-edit fa-lg"></i></a>
+                    <a href="" onclick="clickRowListener(this)" class="disabled" title="/svg"><i class="fas fa-file-download fa-lg"></i></a>
+                    <a href="" onclick="clickRowListener(this)" class="disabled" title="/export"><i class="fas fa-file-export fa-lg"></i></a>
+                    <a href="" onclick="clickRowListener(this)" class="disabled" title="/nav"><i class="fas fa-external-link-square-alt fa-lg"></i></a>
                 </td>
               </tr>
             {% endfor %}
@@ -64,8 +63,13 @@ $("#secondColumn").click(function(){
 
 
 <script type="text/javascript">
-function getElement() {
-  alert("I am an alert box!");
-}
+  object.onclick = function(){
+    var urls = [];
+    $('#explore_results tr').each(function () {
+        urls.push($(this).find('td').eq(2).text());
+    });
+
+    alert(urls);
+};
 </script>
 {% endblock %}
