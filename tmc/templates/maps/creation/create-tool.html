@@ -1,35 +1,74 @@
 {% extends 'index.html' %}
 
 {% block header %}
-  <h1>{% block title %}New Tool{% endblock %}</h1>
+  {% if request_tool %}
+    <h1>Edit Tool</h1>
+  {% else %}
+    <h1>New Tool</h1>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
-  <form method="post">
+  <form method="post" {% if request_tool %} action="/edit-tool"{% endif %} >
   	<div class="form-group row">
-      <div class="col-7">
-        <label for="title">ID</label>
-        <input name="id" class="form-control" id="id" value="{{ request.form['name'] }}" required>
+      <div class="col-3">
+        {% if request_tool %}
+        <label for="title">Database ID</label>
+        <input class="form-control" id="db_id" name="db_id" value="{{request_tool['id']}}" readonly>{% endif %}
+
+        <label for="title" readonly>ID</label>
+          <input name="tool_id" class="form-control" id="id" {% if request_tool %} value="{{request_tool['tool_id']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
       </div>
 
-  		<div class="col-7">
+  		<div class="col-5">
 		    <label for="title">Name</label>
-		    <input name="name" class="form-control" id="name" value="{{ request.form['name'] }}" required>
+          <input name="tool_name" class="form-control" id="id" {% if request_tool %} value="{{request_tool['tool_name']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
   		</div>
 
-      <div class="col-7">
+      <div class="col-5">
         <label for="title">Community identifiers</label>
-        <input name="identifiers" class="form-control" id="identifiers" value="{{ request.form['name'] }}">
+        <input name="tool_identifiers" class="form-control" id="id" {% if request_tool %} value="{{request_tool['tool_identifiers']}}"
+        {% else %} value="{{ request.form['identifiers'] }}"  {% endif %}>  
       </div>
 
-      <div class="col-9">
-    		<label for="description">Description</label>
-  		  <textarea name="description" class="form-control" id="description">{{ request.form['description'] }}</textarea>
-		  </div>
+      <div class="col-10">
+      	<label for="description">Description</label>
+    		  <textarea name="description" class="form-control" id="description">{% if request_tool %} {{request_tool['tool_description']}}
+            {% else %}{{ request.form['description'] }}{% endif %}</textarea>
+  		</div>
 
-    	<div class="col-7">
+      	<div class="col-7">
     		<input type="submit" class="btn btn-dark" value="Save">
+
   		</div>
   	</div>
   </form>
+
+   {% if request_tool_techniques|length %}
+
+      <table class="table display" id="explore_results">
+        <thead>
+          <tr>
+            {% for element in element_th %}
+              <th scope="col">{{ element }}</th>
+            {% endfor %}
+               <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for element in request_tool_techniques %}
+              <tr>
+                {% for key, value in element.items() %}
+                  <td scope="row" name="{{ key }}">{{ value }}</td>
+                {% endfor %}
+                  <td scope="row" class="col-2">
+                    <a class="disabled" href="" onclick="" title="/edit" method = POST><i class="fas fa-edit fa-lg"></i></a>
+                    <a class="disabled" href="" onclick="" title="/delete" method = POST><i class="fas fa-trash fa-lg"></i></a>
+                  </td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
 {% endblock %}

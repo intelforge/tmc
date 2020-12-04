@@ -1,48 +1,39 @@
 {% extends 'index.html' %}
 
 {% block header %}
-  {% if request_adversary %}
-    <h1>Edit Adversary</h1>
+  {% if request_tactic %}
+    <h1>Edit tactic</h1>
   {% else %}
-    <h1>New Adversary</h1>
+    <h1>New tactic</h1>
   {% endif %}
 {% endblock %}
 
 {% block content %}
-  <form method="post" {% if request_adversary %} action="/edit-adversary"{% endif %} >
+  <form method="post" {% if request_tactic %} action="/edit-tactic"{% endif %} >
   	<div class="form-group row">
       <div class="col-3">
-        {% if request_adversary %}
+        {% if request_tactic %}
         <label for="title">Database ID</label>
-        <input class="form-control" id="db_id" name="db_id" value="{{request_adversary['id']}}" readonly>{% endif %}
+        <input class="form-control" id="db_id" name="db_id" value="{{request_tactic['id']}}" readonly>{% endif %}
 
         <label for="title" readonly>ID</label>
-          <input name="adversary_id" class="form-control" id="id" {% if request_adversary %} value="{{request_adversary['adversary_id']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
+          <input name="tactic_id" class="form-control" id="id" {% if request_tactic %} value="{{request_tactic['tactic_id']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
       </div>
 
   		<div class="col-5">
 		    <label for="title">Name</label>
-          <input name="adversary_name" class="form-control" id="id" {% if request_adversary %} value="{{request_adversary['adversary_name']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
+          <input name="tactic_name" class="form-control" id="id" {% if request_tactic %} value="{{request_tactic['tactic_name']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
   		</div>
 
       <div class="col-5">
         <label for="title">Community identifiers</label>
-        <input name="adversary_identifiers" class="form-control" id="id" {% if request_adversary %} value="{{request_adversary['adversary_identifiers']}}"
+        <input name="tactic_identifiers" class="form-control" id="id" {% if request_tactic %} value="{{request_tactic['tactic_identifiers']}}"
         {% else %} value="{{ request.form['identifiers'] }}"  {% endif %}>  
-      </div>
-
-      <div class="col-5">
-        <label for="title">Suspected origin</label>
-          <select name='sorigin'>
-          {% for name in countries_list %}
-              <option value="{{ name }}" {{'selected' if name==request_adversary['sorigin']}}>{{ name }}</option>
-            {% endfor %}
-        </select>
       </div>
 
       <div class="col-10">
       	<label for="description">Description</label>
-    		  <textarea name="description" class="form-control" id="description">{% if request_adversary %} {{request_adversary['adversary_description']}}
+    		  <textarea name="description" class="form-control" id="description">{% if request_tactic %} {{request_tactic['tactic_description']}}
             {% else %}{{ request.form['description'] }}{% endif %}</textarea>
   		</div>
 
@@ -53,7 +44,7 @@
   	</div>
   </form>
 
-   {% if request_adversary_techniques|length %}
+   {% if request_tactic_techniques|length %}
 
       <table class="table display" id="explore_results">
         <thead>
@@ -65,7 +56,7 @@
           </tr>
         </thead>
         <tbody>
-            {% for element in request_adversary_techniques %}
+            {% for element in request_tactic_techniques %}
               <tr>
                 {% for key, value in element.items() %}
                   <td scope="row" name="{{ key }}">{{ value }}</td>

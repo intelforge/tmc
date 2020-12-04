@@ -10,7 +10,7 @@ from IPython import embed
 import tmc.queries as q
 from tmc.queries import *
 import tmc.processor as processor
-import datetime
+import time
 import json
 
 bp = Blueprint('maps', __name__, template_folder='templates')
@@ -64,6 +64,39 @@ def insert_tool_x_techniques():
 
     return True
 
+
+# Loading ATT&CK to DB for the first time
+@bp.route('/first-time')
+@login_required
+def first_time():
+    
+    print('Interacting with ATTACKCTI...')
+    processor.get_elements()
+
+    return render_template('maps/completed.html')
+
+# Export Results
+@bp.route('/export')
+def export_file(): 
+
+    return True
+
+
+# Navigator Functions
+
+# Download SVG
+@bp.route('/svg')
+def download_svg(): 
+
+    return True
+
+# Open Navigator
+@bp.route('/open-in-nav')
+def open_in_nav(): 
+
+    return True
+
+
 # List all posible actions to display data
 @bp.route('/explore')
 def explore():
@@ -87,9 +120,12 @@ def explore_events():
 
     title='Events'
     events = q.q_get_events.get_events()
-    events_th = events[0].keys() #add test for no elements
-
-    return render_template('maps/explore/explore-element.html', title=title, events=events, element_th=events_th, paginated_element=events)
+    try:
+        events_th = events[0].keys() #add test for no elements
+    except IndexError:
+        return render_template('maps/no-data.html')
+    else:
+        return render_template('maps/explore/explore-element.html', title=title, events=events, element_th=events_th, paginated_element=events)
 
 
 # Displays all tools in the DB
@@ -101,6 +137,17 @@ def explore_tools():
     tools_th = tools[0].keys() 
 
     return render_template('maps/explore/explore-element.html', title=title, tools=tools, element_th=tools_th, paginated_element=tools)
+
+
+# Displays all tactics in the DB
+@bp.route('/explore-tactics')
+def explore_tactics():
+
+    title='Tactics'
+    tactics = q.q_get_tactics.get_tactics()
+    tactics_th = tactics[0].keys()   
+
+    return render_template('maps/explore/explore-element.html', title=title, tactics=tactics, element_th=tactics_th, paginated_element=tactics)
 
 
 # Displays all technique in the DB
@@ -130,6 +177,10 @@ def explore_subtechniques():
 # Display Adversaries per event
 @bp.route('/adversaries-x-event')
 def get_adversaries_x_event():  
+    adversaries_x_event = ''
+
+    if not adversaries_x_event:
+        return render_template('maps/no-data.html')
 
     return render_template('maps/relations/explore-element.html')
 
@@ -140,15 +191,26 @@ def get_adversaries_x_sorigin():
 
     title='Adversaries Suspected Origin'
     adversaries_x_sorigin = q.q_get_adversaries_sorigin.get_adversaries_sorigin()
-    adversaries_x_sorigin_th = adversaries_x_sorigin[0].keys()
+
+    try: 
+        adversaries_x_sorigin_th = adversaries_x_sorigin[0].keys()
+
+    except IndexError:
+        return render_template('maps/no-data.html')  
 
     return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=adversaries_x_sorigin)
 
 
 # Display Adversaries per industry
 @bp.route('/adversaries-x-industry')
-def get_adversaries_x_industry():    
+def get_adversaries_x_industry():  
 
+    adversaries_x_industry = ''
+    
+    if not adversaries_x_industry:
+        return render_template('maps/no-data.html')  
+
+    else:
         return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=adversaries_x_sorigin)
 
 
@@ -156,19 +218,33 @@ def get_adversaries_x_industry():
 @bp.route('/events-x-industry')
 def get_events_x_industry():
 
-    return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=adversaries_x_sorigin)
+    events_x_industry = ''
+    
+    if not events_x_industry:
+        return render_template('maps/no-data.html')
+
+    else:
+        return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=adversaries_x_sorigin)
 
 
 # Display Techniques per industry
 @bp.route('/techniques-per-industry')
 def get_techniques_per_industry(): 
 
-    return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=adversaries_x_sorigin)
+    techniques_per_industry = ''
+
+    if not techniques_per_industry:
+        return render_template('maps/no-data.html')
+
+    else:
+
+        return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=adversaries_x_sorigin)
 
 
 # Display Adversaries per tool
 @bp.route('/adversaries-x-tool')
 def get_adversaries_x_tool(): 
+
     title='Adversaries per tool'
 
     adversaries_x_tool = q.q_get_adversaries_x_tool.get_adversaries_x_tool()
@@ -225,46 +301,6 @@ def create_event():
 
 # DB INTERACTION FROM FRONT-END
 
-@bp.route('/edit/adversary/<element>', methods=('GET', 'POST'))
-def render_edit_adversary(element):
-    
-    countries_list = q.q_get_countries.get_countries()
-    request_adversary=q.q_get_adversaries.get_adversaries(element)
-    request_adversary_techniques=q.q_get_adversaries_techniques.get_adversaries_techniques('110')
-    adversary_techniques_th = request_adversary_techniques[0].keys()
-
-    if request_adversary is False:
-        return render_template('maps/404.html')
-    else:
-        return render_template('maps/creation/create-adversary.html', request_adversary_techniques=request_adversary_techniques, element_th=adversary_techniques_th, request_adversary=request_adversary, countries_list=countries_list)
-
-@bp.route('/edit-adversary', methods=('GET', 'POST'))
-@login_required
-def edit_adversary():
-    try:
-        if request.method == 'POST':
-            edited = request.form
-
-            db_id = edited['db_id']
-            adversary_id = edited['adversary_id']
-            adversary_name = edited['adversary_name']
-            adversary_identifiers = edited['adversary_identifiers']
-            adversary_sorigin = edited['sorigin']
-            adversary_description = edited['description']
-            updated_date = datetime.datetime.now()
-
-            db = get_db()
-            db.execute(
-                'UPDATE adversaries SET adversary_id=?, adversary_name=?, adversary_description=?, adversary_identifiers=?, adversary_sorigin=?, updated_date=?, updated_by=? WHERE id=?',
-                (adversary_id, adversary_name, adversary_description, adversary_identifiers, adversary_sorigin, updated_date, g.user['id'], db_id,)
-            )
-            db.commit()
-
-            return redirect('/explore-adversaries') 
-    except:
-        return render_template('maps/404.html')
-
-
 @bp.route('/create-adversary', methods=('GET', 'POST'))
 @login_required
 def create_adversary():
@@ -295,14 +331,58 @@ def create_adversary():
             db.commit()
             return redirect(url_for('maps.create_adversary')) #add success/error message
 
-    return render_template('maps/creation/create-adversary.html', countries_list=countries_list)
+    return render_template('maps/creation/create-adversary.html', countries_list=countries_list, request_adversary = '')
+
+
+@bp.route('/edit/adversary/<element>', methods=('GET', 'POST'))
+def render_edit_adversary(element):
+
+    countries_list = q.q_get_countries.get_countries()
+    request_adversary=q.q_get_adversaries.get_adversaries(element)
+    request_adversary_techniques=q.q_get_adversaries_techniques.get_adversaries_techniques(element)
+
+    if request_adversary_techniques:
+        adversary_techniques_th = request_adversary_techniques[0].keys()
+    else:
+        adversary_techniques_th = ''
+
+    if request_adversary is False:
+        return render_template('maps/404.html')
+    else:
+        return render_template('maps/creation/create-adversary.html', request_adversary_techniques=request_adversary_techniques, element_th=adversary_techniques_th, request_adversary=request_adversary, countries_list=countries_list)
+
+
+@bp.route('/edit-adversary', methods=('GET', 'POST'))
+@login_required
+def edit_adversary():
+    try:
+        if request.method == 'POST':
+            edited = request.form
+
+            db_id = edited['db_id']
+            adversary_id = edited['adversary_id']
+            adversary_name = edited['adversary_name']
+            adversary_identifiers = edited['adversary_identifiers']
+            adversary_sorigin = edited['sorigin']
+            adversary_description = edited['description']
+            updated_date = time.strftime('%Y-%m-%d %H:%M:%S')
+
+            db = get_db()
+            db.execute(
+                'UPDATE adversaries SET adversary_id=?, adversary_name=?, adversary_description=?, adversary_identifiers=?, adversary_sorigin=?, updated_date=?, updated_by=? WHERE id=?',
+                (adversary_id, adversary_name, adversary_description, adversary_identifiers, adversary_sorigin, updated_date, g.user['id'], db_id,)
+            )
+            db.commit()
+
+            return redirect('/explore-adversaries') 
+    except:
+        return render_template('maps/404.html')
 
 
 # Creates the new tool in the database
 @bp.route('/create-tool', methods=('GET', 'POST'))
 @login_required
 def create_tool():
-
     if request.method == "POST":
         tool_id = request.form['id']
         tool_name = request.form['name']
@@ -326,6 +406,53 @@ def create_tool():
             return redirect(url_for('maps.create_tool'))
 
     return render_template('maps/creation/create-tool.html')
+
+
+@bp.route('/edit/tool/<element>', methods=('GET', 'POST'))
+def render_edit_tool(element):
+
+    request_tool=q.q_get_tools.get_tools(element)
+
+# MISSING QUERY HERE
+
+    request_tool_techniques=q.q_get_tool_techniques.get_tool_techniques(element)
+
+    if request_tool_techniques:
+        tool_techniques_th = request_tool_techniques[0].keys()
+    else:
+        tool_techniques_th = ''
+
+    if request_tool is False:
+        return render_template('maps/404.html')
+    else:
+        return render_template('maps/creation/create-tool.html', request_tool_techniques=request_tool_techniques, element_th=tool_techniques_th, request_tool=request_tool)
+
+
+@bp.route('/edit-tool', methods=('GET', 'POST'))
+@login_required
+def edit_tool():
+    try:
+        if request.method == 'POST':
+            edited = request.form
+
+            db_id = edited['db_id']
+            tool_id = edited['tool_id']
+            tool_name = edited['tool_name']
+            tool_identifiers = edited['tool_identifiers']
+            tool_adversary = edited['tool_adversary']
+            tool_description = edited['description']
+            updated_date = time.strftime('%Y-%m-%d %H:%M:%S')
+
+            db = get_db()
+            db.execute(
+                'UPDATE tools SET tool_id=?, tool_name=?, tool_description=?, tool_identifiers=?, updated_date=?, updated_by=? WHERE id=?',
+                (tool_id, tool_name, tool_description, tool_identifiers, updated_date, g.user['id'], db_id,)
+            )
+            db.commit()
+
+            return redirect('/explore-tools') 
+    except:
+        return render_template('maps/404.html')
 
 
 # Creates the new technique in the database
@@ -373,6 +500,49 @@ def create_technique():
     return render_template('maps/creation/create-technique.html', tactics_list=tactics_list)
 
 
+@bp.route('/edit/technique/<element>', methods=('GET', 'POST'))
+def render_edit_technique(element):
+
+    request_technique=q.q_get_techniques.get_techniques(element)
+    request_related_tools=q.q_get_tools_x_techniques.get_tools_x_techniques(element)
+
+    if request_related_tools:
+        request_related_tools_th = request_related_tools[0].keys()
+    else:
+        request_related_tools_th = ''
+
+    if request_technique is False:
+        return render_template('maps/404.html')
+    else:
+        return render_template('maps/creation/create-technique.html', request_related_tools=request_related_tools, element_th=request_related_tools_th, request_technique=request_technique)
+
+
+@bp.route('/edit-technique', methods=('GET', 'POST'))
+@login_required
+def edit_technique():
+    try:
+        if request.method == 'POST':
+            edited = request.form
+
+            db_id = edited['db_id']
+            technique_id = edited['technique_id']
+            technique_name = edited['technique_name']
+            technique_tactic = edited['technique_tactic']
+            technique_description = edited['description']
+            updated_date = time.strftime('%Y-%m-%d %H:%M:%S')
+
+            db = get_db()
+            db.execute(
+                'UPDATE tools SET technique_id=?, technique_name=?, technique_description=?, updated_date=?, updated_by=? WHERE id=?',
+                (technique_id, technique_name, technique_description, updated_date, g.user['id'], db_id,)
+            )
+            db.commit()
+
+            return redirect('/explore-techniques') 
+    except:
+        return render_template('maps/404.html')
+
+
 # Creates the new subtechnique in the database
 @bp.route('/create-subtechnique', methods=('GET', 'POST'))
 def create_subtechnique():
@@ -414,33 +584,87 @@ def create_subtechnique():
     return render_template('maps/creation/create-subtechnique.html', techniques_list=techniques_list)
 
 
-# Loading ATT&CK to DB for the first time
-@bp.route('/first-time')
+@bp.route('/edit/subtechnique/<element>', methods=('GET', 'POST'))
+def render_edit_subtechnique(element):
+
+    request_subtechnique=q.q_get_subtechniques.get_subtechniques(element)
+    request_related_tools=q.q_get_tools_x_subtechniques.get_tools_x_subtechniques(element)
+
+    if request_related_tools:
+        request_related_tools_th = request_related_tools[0].keys()
+    else:
+        request_related_tools_th = ''
+
+    if request_subtechnique is False:
+        return render_template('maps/404.html')
+    else:
+        return render_template('maps/creation/create-subtechnique.html', request_related_tools=request_related_tools, element_th=request_related_tools_th, request_subtechnique=request_subtechnique)
+
+
+@bp.route('/edit-subtechnique', methods=('GET', 'POST'))
 @login_required
-def first_time():
-    
-    print('Interacting with ATTACKCTI...')
-    processor.get_elements()
+def edit_subtechnique():
+    try:
+        if request.method == 'POST':
+            edited = request.form
 
-    return render_template('maps/completed.html')
+            db_id = edited['db_id']
+            subtechnique_id = edited['subtechnique_id']
+            subtechnique_name = edited['subtechnique_name']
+            subtechnique_tactic = edited['subtechnique_tactic']
+            subtechnique_description = edited['description']
+            updated_date = time.strftime('%Y-%m-%d %H:%M:%S')
 
-# Export Results
-@bp.route('/export')
-def export_file(): 
+            db = get_db()
+            db.execute(
+                'UPDATE techniques SET subtechnique_id=?, subtechnique_name=?, subtechnique_description=?, updated_date=?, updated_by=? WHERE id=?',
+                (subtechnique_id, subtechnique_name, subtechnique_description, updated_date, g.user['id'], db_id,)
+            )
+            db.commit()
 
-    return True
+            return redirect('/explore-subtechniques') 
+    except:
+        return render_template('maps/404.html')
 
 
-# Navigator Functions
 
-# Download SVG
-@bp.route('/svg')
-def download_svg(): 
+@bp.route('/edit/tactic/<element>', methods=('GET', 'POST'))
+def render_edit_tactic(element):
 
-    return True
+    request_tactic=q.q_get_tactics.get_tactics(element)
+    request_related_tactics=q.q_get_related_tactics.get_related_tactics(element)
 
-# Open Navigator
-@bp.route('/open-in-nav')
-def open_in_nav(): 
+    if request_related_tactics:
+        request_tactics_th = request_related_tactics[0].keys()
+    else:
+        request_related_tactics_th = ''
 
-    return True
+    if request_tactic is False:
+        return render_template('maps/404.html')
+    else:
+        return render_template('maps/creation/create-adversary.html', request_related_tactics=request_related_tactics, element_th=request_tactics_th, request_tactic=request_tactic)
+
+
+@bp.route('/edit-tactic', methods=('GET', 'POST'))
+@login_required
+def edit_tactic():
+    try:
+        if request.method == 'POST':
+            edited = request.form
+
+            db_id = edited['db_id']
+            tactic_id = edited['adversary_id']
+            tactic_name = edited['adversary_name']
+            tactic_description = edited['description']
+            updated_date = time.strftime('%Y-%m-%d %H:%M:%S')
+
+            db = get_db()
+            db.execute(
+                'UPDATE tactics SET tactic_id=?, tactic_name=?, tactic_description=?, updated_date=?, updated_by=? WHERE id=?',
+                (tactic_id, tactic_name, tactic_description, updated_date, g.user['id'], db_id,)
+            )
+            db.commit()
+
+            return redirect('/explore-tactics') 
+    except:
+        return render_template('maps/404.html')

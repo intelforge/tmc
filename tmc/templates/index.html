@@ -99,10 +99,10 @@
 function clickRowListener(anchor) {
     var table = $('#explore_results').DataTable();
     var headers = document.querySelectorAll("th");
-    var element_value = table.$('tr.selected').find('td').eq(1).text();
-    var element_name = headers[1].innerText;
+    var element_value = table.$('tr.selected').find('td').eq(0).text();
+    var element_name = headers[2].innerText;
     var atb = anchor.getAttribute('title');
+    a = atb + "/" + element_name.toLowerCase() + "/" + element_value.toLowerCase();
     location.replace = atb + "/" + element_name.toLowerCase() + "/" + element_value.toLowerCase();
-    
 }
 </script>
