@@ -23,7 +23,7 @@ def index():
     tools_list = q.q_get_tools.get_tools()
     industries_list = q.q_get_industries.get_industries()
 
-    return render_template('maps/index.html', adversaries_list=adversaries_list, tools_list=tools_list, industries_list=industries_list)
+    return render_template('maps/welcome.html', adversaries_list=adversaries_list, tools_list=tools_list, industries_list=industries_list)
 
 @bp.route('/tram-interaction', methods=["GET", "POST"])
 def tram_mapping():
@@ -43,7 +43,7 @@ def tram_mapping():
     get_techniques = sent_url_to_tram()
     tool_x_techniques = insert_tool_x_techniques()
 
-    return render_template('maps/index.html')
+    return render_template('maps/welcome.html')
 
 def insert_new_event():
 
@@ -102,6 +102,7 @@ def open_in_nav():
 def explore():
 
     return render_template('maps/explore.html') 
+
 
 # Displays all adversaries in the DB
 @bp.route('/explore-adversaries')
