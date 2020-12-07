@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS tools_x_techniques;
 DROP TABLE IF EXISTS tools_x_subtechniques;
 DROP TABLE IF EXISTS tactics_x_techniques;
 DROP TABLE IF EXISTS techniques_x_subtechniques;
+DROP TABLE IF EXISTS countries;
 
 
 CREATE TABLE user (
@@ -80,10 +81,9 @@ CREATE TABLE events (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  event_id TEXT NOT NULL,
   event_name TEXT NOT NULL,
   event_description TEXT NOT NULL,
-  event_industry TEXT,
+  event_url TEXT,
   event_date DATETIME,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
@@ -99,6 +99,16 @@ CREATE TABLE adversaries_x_tools (
   FOREIGN KEY (tool_id) REFERENCES tool (id)
 );
 
+CREATE TABLE adversaries_x_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  author_id INTEGER NOT NULL,
+  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  adversary_id TEXT NOT NULL,
+  event_id TEXT NOT NULL,
+  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (adversary_id) REFERENCES adversary (id),
+  FOREIGN KEY (event_id) REFERENCES event (id)
+);
 
 CREATE TABLE tools_x_techniques (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -167,7 +177,7 @@ country TEXT NOT NULL,
 FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
-CREATE TABLE event_x_industry (
+CREATE TABLE events_x_industries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author_id INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

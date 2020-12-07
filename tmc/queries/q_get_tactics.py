@@ -1,7 +1,5 @@
 from flask import ( g, redirect, url_for )
 from tmc.db import get_db, make_dicts
-from attackcti import attack_client
-from IPython import embed
 
 # Get list of all techniques available in the database.
 def get_tactics(tactic=''):

@@ -2,7 +2,7 @@ from flask import (
     g, redirect, render_template, request, url_for
 )
 from tmc.auth import login_required
-from attackcti import attack_client
+#from attackcti import attack_client
 from tmc.db import get_db
 from IPython import embed
 import tmc.queries as q
@@ -162,7 +162,7 @@ def insert_tactic(attack_id, tactic_name, tactic_description):
     if existence is False:
         insert_into_table = q.q_insert_into_tables.insert_into_tables('tactics', attack_id, tactic_name, tactic_description)
         print('Created tactic %s' % tactic_name)
-        return redirect(url_for('maps.completed'))
+        return insert_into_table
     else:
         return False
 
@@ -171,9 +171,7 @@ def insert_tactic(attack_id, tactic_name, tactic_description):
 def insert_technique(attack_id, technique_name, technique_description):
 
     insert_into_table = q.q_insert_into_tables.insert_into_tables('techniques', attack_id, technique_name, technique_description)
-
     print('Created technique %s' % technique_name)
-
     return insert_into_table
 
 
@@ -181,9 +179,7 @@ def insert_technique(attack_id, technique_name, technique_description):
 def insert_subtechnique(attack_id, subtechnique_name, subtechnique_description):
 
     insert_into_table = q.q_insert_into_tables.insert_into_tables('subtechniques', attack_id, subtechnique_name, subtechnique_description)
-
     print('Created technique %s' % subtechnique_name)
-
     return insert_into_table
 
 
@@ -218,12 +214,14 @@ def insert_toolxtec(tool_name, tool_id, techniques_used):
             technique_id = q.q_get_element_id.get_element_id('techniques', 'technique_id', technique_attack_id)
             result = q.q_insert_tool_x_techn.insert_tool_x_techn('tools_x_techniques', tool_id, technique_id)
         print('Created relationship for %s' % tool_name)
-    return True
+    return result
+
 
 
 # Adding ATT&CK TacticxTechniques
 def insert_tacxtec(technique_id, related_tactic):
 
+    error = []
     tactic = related_tactic.replace('-', ' ')
     tactic_id = q.q_get_element_id.get_element_id('tactics', 'tactic_name', tactic)
     try:
@@ -231,8 +229,8 @@ def insert_tacxtec(technique_id, related_tactic):
         print('Created tactic relationship')
     except KeyError:
         error.append(tactic_id)
-
-    return redirect(url_for('maps.completed'))
+        print('Error: tactic')
+    return error
 
 
 # Insert relation insert_advxtool
@@ -244,7 +242,7 @@ def insert_advxtool(adversary_id, related_tools):
 
         result = q.q_insert_adversary_x_tool.insert_adversary_x_tool(adversary_id, tool_id)
         print('Created adversary per tool relationship')    
-    return True
+    return result
 
 
 # Insert Subtechniques x Techniques
@@ -252,4 +250,4 @@ def insert_tecxsubtec(related_technique, subattack_id):
     
     insert_into_table = q.q_insert_relation_into_tables.insert_relation_into_tables('techniques_x_subtechniques', 'technique_id', 'subtechnique_id', related_technique, subattack_id)
     print('Created technique per subtechnique relationship')
-    return True
+    return insert_into_table

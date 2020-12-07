@@ -1,6 +1,5 @@
 from flask import ( g, redirect, url_for )
 from tmc.db import get_db
-from attackcti import attack_client
 
 # Insert relation tool_x_subtechnique
 def insert_tool_x_subtechn(table, tool_id, subtechnique_id):

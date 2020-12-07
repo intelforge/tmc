@@ -1,17 +1,17 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
 )
-from flask_paginate import Pagination, get_page_args
 from werkzeug.exceptions import abort
 from tmc.auth import login_required
 from tmc.db import get_db
-from attackcti import attack_client
 from IPython import embed
 import tmc.queries as q
 from tmc.queries import *
 import tmc.processor as processor
 import time
 import json
+import ast
+import requests
 
 bp = Blueprint('maps', __name__, template_folder='templates')
 
@@ -31,19 +31,38 @@ def tram_mapping():
     if request.method == "POST":
 
         req = request.form
-        adversary = req['adversary']
-        tool = req['tool']
+        adversary_dict = ast.literal_eval(req['adversary']) # convert string dict into real dict
+        adversary = adversary_dict['db_id']
+        tool_dict = ast.literal_eval(req['tool']) # convert string dict into real dict
+        tool = tool_dict['db_id']
+        industry_dict = ast.literal_eval(req['industry']) # convert string dict into real dict
+        industry = industry_dict['db_id']
         event_name = req['event_name']
         event_description = req['event_description']
-        industry = req['industry']
-        url = req['event_description']
+        event_url = req['url']
 
-    event = insert_new_event()
-    adv_x_event=insert_adversary_x_event(adversary, event)
-    get_techniques = sent_url_to_tram()
-    tool_x_techniques = insert_tool_x_techniques()
+    event = q.q_insert_into_events.insert_into_events(event_name, event_description, event_url)
+    adv_x_event = q.q_insert_adversary_x_event.insert_adversary_x_event(adversary, event)
+    event_x_ind = q.q_insert_event_x_industry.insert_event_x_industry(event, industry)
+    get_techniques = send_url_to_tram(event_name, event_url)
+   # embed()
+   # tool_x_techniques = insert_tool_x_techniques()
 
     return render_template('maps/welcome.html')
+
+
+def send_url_to_tram(event_name, event_url):
+
+    tram_insert = {
+        "index":"insert_report",
+        "url": [event_url],
+        "title": [event_name]
+    }
+
+    r = requests.post("http://localhost:9999/rest", json=tram_insert, headers={"content-type":"application/json"})
+    print(r)
+
+    return True
 
 def insert_new_event():
 

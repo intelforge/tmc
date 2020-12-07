@@ -1,6 +1,5 @@
 from flask import ( g, redirect, url_for )
 from tmc.db import get_db
-from attackcti import attack_client
 
 # Insert relation adversary per tool
 def insert_adversary_x_tool(adversary_id, tool_id):

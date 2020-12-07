@@ -1,6 +1,5 @@
 from flask import ( g, redirect, url_for )
 from tmc.db import get_db
-from attackcti import attack_client
 
 # Get table element by ID
 def get_element_id(table, column, value): #FROM MOBILE, TECHNIQUE 'COMPROMISE' needs fixing

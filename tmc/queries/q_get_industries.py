@@ -1,7 +1,5 @@
 from flask import ( g, redirect, url_for )
 from tmc.db import get_db, make_dicts
-from attackcti import attack_client
-from IPython import embed
 
 # Get list of all industries available in the database.
 def get_industries():
@@ -10,7 +8,7 @@ def get_industries():
     try:
         db.row_factory = make_dicts
         query = db.execute(
-            'SELECT id, industry_name as Industry FROM industries ORDER BY industry_name ASC').fetchall()
+            'SELECT id as db_id, industry_name as Industry FROM industries ORDER BY industry_name ASC').fetchall()
         return query
     except TypeError:
         #embed()

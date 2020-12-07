@@ -1,8 +1,5 @@
 from flask import ( g, redirect, url_for )
 from tmc.db import get_db
-from attackcti import attack_client
-from tmc.auth import login_required
-from IPython import embed
 
 # Isert relation into db from any table
 def insert_relation_into_tables(table, relation_name, element_name, related_id, element_id):

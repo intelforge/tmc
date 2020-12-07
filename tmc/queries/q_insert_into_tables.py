@@ -1,7 +1,5 @@
 from flask import ( g, redirect, url_for )
 from tmc.db import get_db
-from attackcti import attack_client
-from tmc.auth import login_required
 
 # Isert into db for any table
 def insert_into_tables(table, element_id, element_name, element_description):

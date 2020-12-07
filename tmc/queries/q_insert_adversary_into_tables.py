@@ -1,8 +1,5 @@
 from flask import ( g, redirect, url_for )
 from tmc.db import get_db
-from attackcti import attack_client
-from tmc.auth import login_required
-from IPython import embed
 
 # Iserta adversary into db from table
 def insert_adversary_into_tables(table, element_id, element_name, element_description, element_identifiers):
