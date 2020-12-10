@@ -2,7 +2,7 @@
 
 {% block header %}
   <h2>{% block title %}Thank you for your patience!{% endblock %}</h2>
-  <p>You can now start exploring the database.</p>
+  <p>{{ message }}</p>
   {% if g.user %}
     <!--Add new links to different sections this for a home page -->
     <button class='btn btn-dark'><a class="action" style='color: white;' href="{{ url_for('maps.explore') }}">Explore</a></button>

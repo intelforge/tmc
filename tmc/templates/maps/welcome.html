@@ -2,14 +2,6 @@
 
 {% block header %}
 
-<!--
-  <script type="text/javascript">
-    $(document).ready(function() {
-    $('.js-example-basic-single').select2();
-    });
-
-  </script> -->
-
   <h2>{% block title %}Welcome!{% endblock %}</h2>
   <p>Load one or multiple URLs to carry out the mapping against TRAM. <br \> Select which adversary, tool, and industry you want that mapping to be associated with.</p>
   {% if g.user %}
@@ -61,11 +53,12 @@
           </div>
 
           <div class="col-2">
-            <input type="submit" class="btn btn-dark" value="Map!">
+            <input type="submit" class="btn btn-dark" value="Map!" onclick="open_tram()">
           </div>
         </div>
 
       </div>
       </div>
   </form>
+
 {% endblock %}

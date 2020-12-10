@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
+    Blueprint, flash, g, redirect, render_template, request, url_for
 )
 from werkzeug.exceptions import abort
 from tmc.auth import login_required
@@ -8,12 +8,14 @@ from IPython import embed
 import tmc.queries as q
 from tmc.queries import *
 import tmc.processor as processor
+import tmc.config as config
 import time
 import json
 import ast
 import requests
 
 bp = Blueprint('maps', __name__, template_folder='templates')
+
 
 # Homepage
 @bp.route('/', methods=["GET", "POST"])
@@ -24,6 +26,7 @@ def index():
     industries_list = q.q_get_industries.get_industries()
 
     return render_template('maps/welcome.html', adversaries_list=adversaries_list, tools_list=tools_list, industries_list=industries_list)
+
 
 @bp.route('/tram-interaction', methods=["GET", "POST"])
 def tram_mapping():
@@ -41,48 +44,60 @@ def tram_mapping():
         event_description = req['event_description']
         event_url = req['url']
 
-    event = q.q_insert_into_events.insert_into_events(event_name, event_description, event_url)
-    adv_x_event = q.q_insert_adversary_x_event.insert_adversary_x_event(adversary, event)
-    event_x_ind = q.q_insert_event_x_industry.insert_event_x_industry(event, industry)
-    get_techniques = send_url_to_tram(event_name, event_url)
-   # embed()
-   # tool_x_techniques = insert_tool_x_techniques()
+        # Creates the security event and all its relationships
+        event = q.q_insert_into_events.insert_into_events(event_name, event_description, event_url)
+        adv_x_event = q.q_insert_adversary_x_event.insert_adversary_x_event(adversary, event)
+        event_x_ind = q.q_insert_event_x_industry.insert_event_x_industry(event, industry)
+        # Sends the URL provided to TRAM for mapping
+        tram_id=str(tool)+'_'+event_name
+        print(tram_id)
+        send_url_to_tram(tram_id, event_url)
+        message = 'Please complete TRAM workflow before continuing. TMC will automatically process TRAM mapping when done. Please wait before continuing..'
 
-    return render_template('maps/welcome.html')
+        return render_template('maps/completed.html', message=message)
 
 
-def send_url_to_tram(event_name, event_url):
+# Issues POST request to TRAM with the report URL you want to process
+def send_url_to_tram(tram_id, event_url):
 
     tram_insert = {
         "index":"insert_report",
         "url": [event_url],
-        "title": [event_name]
+        "title": [tram_id],
+        "request": True
     }
-
-    r = requests.post("http://localhost:9999/rest", json=tram_insert, headers={"content-type":"application/json"})
-    print(r)
-
-    return True
-
-def insert_new_event():
-
-    return True
+    url = config.config_dict['tram'] + "/rest"
+    requests.post(url=url, json=tram_insert, headers={"content-type":"application/json"})
 
 
-def insert_adversary_x_event(adversary, event):
+# Process the techniques sent by TRAM issued POST request after analysis completion
+@bp.route('/tram-response', methods=['GET', 'POST']) 
+def wait_tram_response():
+    
+    if request.method == 'POST':
+        tram_response = json.loads(request.data)
+        print(tram_response)
 
-    return True
+        try:
 
+            tool_id = tram_response[0]['title'].split('_')[0]
 
-def sent_url_to_tram():
+            for element in tram_response:
+                if '.' in element['attack_tid']:
+                    subtechnique_attack_id = element['attack_tid']
+                    db_id = q.q_get_element_id.get_element_id('subtechniques', 'subtechnique_id', subtechnique_attack_id)
+                    tool_x_techniques = q_insert_tool_x_subtechn.insert_tool_x_subtechn('tools_x_subtechniques', tool_id, db_id)
+                else:
+                    technique_attack_id = element['attack_tid']
+                    db_id = q.q_get_element_id.get_element_id('techniques', 'technique_id', technique_attack_id)
+                    tools_x_subtechniques = q.q_insert_tool_x_techn.insert_tool_x_techn('tools_x_techniques', tool_id, db_id)
+            
+            message="Tram interaction has been completed. You can now explore your mapping in the TMC."
 
-    return True
-
-
-def insert_tool_x_techniques():
-
-    return True
-
+        except IndexError:
+            message="TMC did not expcet a TRAM request for this report."
+    
+    return render_template('maps/completed.html', message=message)
 
 # Loading ATT&CK to DB for the first time
 @bp.route('/first-time')
@@ -91,8 +106,9 @@ def first_time():
     
     print('Interacting with ATTACKCTI...')
     processor.get_elements()
+    message="You can now start exploring the database."
 
-    return render_template('maps/completed.html')
+    return render_template('maps/completed.html', message=message)
 
 # Export Results
 @bp.route('/export')
@@ -326,7 +342,6 @@ def create_event():
 def create_adversary():
     
     countries_list = q.q_get_countries.get_countries()
-
 
     if request.method == "POST":
         adversary_id = request.form['adversary_id']

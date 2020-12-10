@@ -11,6 +11,7 @@
 
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='custom.js') }}"></script>
 
 
 <style type="text/css">
@@ -68,41 +69,3 @@
     {% block content %}{% endblock %}
   </section>
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-   
-    var table = $('#explore_results').DataTable();
-    var anchor = document.querySelectorAll('.disabled');
-
-    var loc = location.href;
-    
-    $('#explore_results tbody').on( 'click', 'tr', function () {
-        if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-            for (var i = 0; i < anchor.length; i++) {
-              anchor[i].classList.add('disabled');
-            }
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-            for (var i = 0; i < anchor.length; i++) {
-              anchor[i].classList.remove('disabled');
-              
-            }
-        }
-    } );
-
-} );
-
-function clickRowListener(anchor) {
-    var table = $('#explore_results').DataTable();
-    var headers = document.querySelectorAll("th");
-    var element_value = table.$('tr.selected').find('td').eq(0).text();
-    var element_name = headers[2].innerText;
-    var atb = anchor.getAttribute('title');
-    a = atb + "/" + element_name.toLowerCase() + "/" + element_value.toLowerCase();
-    location.replace = atb + "/" + element_name.toLowerCase() + "/" + element_value.toLowerCase();
-}
-</script>

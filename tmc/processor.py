@@ -2,14 +2,14 @@ from flask import (
     g, redirect, render_template, request, url_for
 )
 from tmc.auth import login_required
-#from attackcti import attack_client
+from attackcti import attack_client
 from tmc.db import get_db
 from IPython import embed
 import tmc.queries as q
 
 # Global variable
 lift = ''
-#lift = attack_client()
+lift = attack_client()
 
 # Classes
 
