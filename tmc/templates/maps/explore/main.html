@@ -1,0 +1,44 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  {% if g.user %}
+  <div class="create-menu">
+    <ul>
+      <li> <a class="action" href="{{ url_for('maps.create_adversary') }}">Create adversary</a></li>
+     <!-- <li><a href="{{ url_for('maps.create_event') }}">Create event</a></li> -->
+      <li><a href="{{ url_for('maps.create_tool') }}">Create tool</a></li>
+      <li><a href="{{ url_for('maps.create_technique') }}">Create techinque</a></li>
+      <li><a href="{{ url_for('maps.create_subtechnique') }}">Create subtechnique</a></li>
+    </ul>
+  </div>
+  {% endif %}
+{% endblock %}\
+
+{% block content %}
+
+<h2>List database elements</h2>
+
+<ul>
+    <li><a href="{{ url_for('maps.explore_adversaries') }}">Adversaries</a></li>
+    <li><a href="{{ url_for('maps.explore_events') }}">Events</a></li>
+    <li><a href="{{ url_for('maps.explore_tools') }}">Tools</a></li>
+    <li><a href="{{ url_for('maps.explore_tactics') }}">Tactics</a></li>
+    <li><a href="{{ url_for('maps.explore_techniques') }}">Techniques</a></li>
+    <li><a href="{{ url_for('maps.explore_subtechniques') }}">Subtechniques</a></li>
+</ul>
+
+<h2>Explore database relationships</h2>
+
+<ul>
+  <li><a href="{{ url_for('maps.get_adversaries_x_event') }}">Adversaries per event</a></li>
+  <li><a href="{{ url_for('maps.get_adversaries_x_tool') }}">Adversaries per tool</a></li>
+  <li><a href="{{ url_for('maps.get_adversaries_x_technique') }}">Adversaries per technique</a></li>
+  <li><a href="{{ url_for('maps.get_adversaries_x_sorigin') }}">Adversaries per suspected origin</a></li>
+  <li><a href="{{ url_for('maps.get_tools_x_techniques') }}">Tools per techniques</a></li>
+  <li><a href="{{ url_for('maps.get_events_x_industry') }}">Events per industry</a></li>
+  <li><a href="{{ url_for('maps.get_most_used_techniques') }}">Most used techniques</a></li>
+  {# 
+  <li><a href="{{ url_for('maps.get_adversaries_x_industry') }}">Adversaries per industry</a></li>
+  <li><a href="{{ url_for('maps.get_techniques_per_industry') }}">Techniques per industry</a></li> #}
+</ul>
+{% endblock %}

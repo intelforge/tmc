@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+test/
+
+instance/
+*.sqlite
+
+export/
+tmc/config.py

@@ -1,0 +1,64 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  {% if g.user %}
+  <div class="create-menu">
+    <ul>
+      <li> <a class="action" href="{{ url_for('maps.create_adversary') }}">Create adversary</a></li>
+     <!-- <li><a href="{{ url_for('maps.create_event') }}">Create event</a></li> -->
+      <li><a href="{{ url_for('maps.create_tool') }}">Create tool</a></li>
+      <li><a href="{{ url_for('maps.create_technique') }}">Create techinque</a></li>
+      <li><a href="{{ url_for('maps.create_subtechnique') }}">Create subtechnique</a></li>
+    </ul>
+  </div>
+  {% endif %}
+{% endblock %}
+
+<!--TO DO: Add search filter at the top-->
+
+<!--Explore Adversary-->
+{% block content %}
+  <form method="post">
+    <div class="form-group row align-items-end">
+      <div class="col-12">
+        <h3 for="title">{{ title }}</h3>
+          <table class="table display" id="explore_results">
+            <thead>
+              <tr>
+              {% for element in element_th %}
+                {% if element == 'db_id' %}
+                  <th style="display:none;" scope="col">{{ element }}</th>
+                {% else %}
+                  <th scope="col">{{ element }}</th>
+                 {% endif %}
+              {% endfor %}
+                  <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for element in paginated_element %}
+              <tr>
+              {% for key, value in element.items() %}
+                {% if key == 'db_id' %}
+                  <td style="display:none;" scope="row" name="{{ key }}">{{ value }}</td>
+                {% else %}
+                  <td scope="row" name="{{ key }}">{{ value }}</td>
+                 {% endif %}
+              {% endfor %}
+                <td scope="row" id="actions">
+                    <a href="#" onclick="clickRowListener(this)" class="disabled" title="/edit" method = POST><i class="fas fa-edit fa-2x"></i></a>
+                    {% if title == 'Adversaries' or title == 'Tools' %}
+                        <a href="#" onclick="clickRowListener(this)" class="disabled" title="/nav"><i class="fas fa-external-link-square-alt fa-2x"></i></a>
+                        <a href="#" onclick="clickRowListener(this)" class="disabled" title="/export"><i class="fas fa-file-export fa-2x"></i></a>
+                        <!--
+                        <a href="#" onclick="clickRowListener(this)" class="disabled" title="/svg"><i class="fas fa-file-download fa-2x"></i></a> -->
+                </td>
+               {% endif %}
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+      </div>
+    </div>
+  </form>
+{% endblock %}

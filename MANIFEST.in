@@ -1,0 +1,4 @@
+include tmc/schema.sql
+graft tmc/static
+graft tmc/templates
+global-exclude *.pyc

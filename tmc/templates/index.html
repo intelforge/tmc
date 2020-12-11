@@ -1,0 +1,67 @@
+<!doctype html>
+<head>
+<title>{% block title %}{% endblock %}TMC</title>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<script src="https://kit.fontawesome.com/f77d338b26.js" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='custom.js') }}"></script>
+
+<style type="text/css">
+  
+  #explore_results_filter, #explore_results_length, #explore_results_info, #explore_results_paginate  {
+    display: inline-block;
+    width: 50%;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+  }
+
+  .selected {
+    background-color: #f5f6f4;
+  }
+
+  #explore_results_filter input {
+    height: calc(1.5em + .75rem + 2px);
+    margin-left: 10px;
+    padding: .375rem .75rem;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+  }
+
+</style>
+</head>
+
+<nav class='container n1'>
+  <a href="/" style="color: #000">
+  <img src={{url_for('static', filename='glasses.png')}} alt='glasses logo' id="logo">
+  <h1 style="font-size: 2.3em;">Threat Mapping Catalogue</h1>
+  </a>
+  <ul>
+    <li><a href="{{ url_for('maps.index') }}">Map!</a></li>
+    <li><a href="{{ url_for('maps.explore') }}">Explore</a></li>
+    {% if g.user %}
+      <li><span>{{ g.user['username'] }}</span></li>
+      <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+    {% else %}
+      <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+      <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+    {% endif %}
+  </ul>
+</nav>
+<div class='container'>
+  <section class="content">
+    <header>
+      {% block header %}{% endblock %}
+    </header>
+    {% for message in get_flashed_messages() %}
+      <div class="flash">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </section>
+</div>

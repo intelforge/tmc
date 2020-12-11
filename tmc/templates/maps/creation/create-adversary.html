@@ -1,0 +1,82 @@
+{% extends 'index.html' %}
+
+  {% block header %}
+    {% if request_adversary %}
+      <h1>Edit Adversary</h1>
+    {% else %}
+      <h1>New Adversary</h1>
+    {% endif %}
+  {% endblock %}
+
+  {% block content %}
+    <form method="post" {% if request_adversary %} action="/edit-adversary"{% endif %} >
+    	<div class="form-group row">
+        <div class="col-3">
+          {% if request_adversary %}
+          <label for="title">Database ID</label>
+          <input class="form-control" id="db_id" name="db_id" value="{{request_adversary['id']}}" readonly>{% endif %}
+
+          <label for="title" readonly>ID</label>
+            <input name="adversary_id" class="form-control" id="id" {% if request_adversary %} value="{{request_adversary['adversary_id']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
+        </div>
+
+    		<div class="col-5">
+  		    <label for="title">Name</label>
+            <input name="adversary_name" class="form-control" id="id" {% if request_adversary %} value="{{request_adversary['adversary_name']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
+    		</div>
+
+        <div class="col-5">
+          <label for="title">Community identifiers</label>
+          <input name="adversary_identifiers" class="form-control" id="id" {% if request_adversary %} value="{{request_adversary['adversary_identifiers']}}"
+          {% else %} value="{{ request.form['identifiers'] }}"  {% endif %}>  
+        </div>
+
+        <div class="col-5">
+          <label for="title">Suspected origin</label>
+            <select name='sorigin'>
+            {% for name in countries_list %}
+                <option value="{{ name }}" {{'selected' if name==request_adversary['sorigin']}}>{{ name }}</option>
+              {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-10">
+        	<label for="description">Description</label>
+      		  <textarea name="description" class="form-control" id="description">{% if request_adversary %} {{request_adversary['adversary_description']}}
+              {% else %}{{ request.form['description'] }}{% endif %}</textarea>
+    		</div>
+
+        	<div class="col-7">
+      		<input type="submit" class="btn btn-dark" value="Save">
+
+    		</div>
+    	</div>
+    </form>
+
+     {% if request_adversary_techniques|length %}
+
+        <table class="table display" id="explore_results">
+          <thead>
+            <tr>
+              {% for element in element_th %}
+                <th scope="col">{{ element }}</th>
+              {% endfor %}
+                 <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for element in request_adversary_techniques %}
+                  {% for key, value in element.items() %}
+                    <td scope="row" name="{{ key }}">{{ value }}</td>
+                  {% endfor %}
+                    <td scope="row">
+                      <a class="disabled" style="color: #000; cursor: not-allowed; opacity: 0.5;" href="" onclick="" title="/edit" method = POST><i class="fas fa-edit fa-lg"></i></a>
+                      <a class="disabled"style="color: #000; cursor: not-allowed; opacity: 0.5;" href="" onclick="" title="/delete" method = POST><i class="fas fa-trash fa-lg"></i></a>
+                    </td>
+                </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
+{% endblock %}

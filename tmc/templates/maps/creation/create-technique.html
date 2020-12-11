@@ -1,0 +1,49 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  {% if request_technique %}
+    <h1>Edit Technique</h1>
+  {% else %}
+    <h1>New Technique</h1>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <form method="post" {% if request_technique %} action="/edit-technique"{% endif %} >
+  	<div class="form-group row">
+      <div class="col-3">
+        {% if request_technique %}
+        <label for="title">Database ID</label>
+        <input class="form-control" id="db_id" name="db_id" value="{{request_technique['id']}}" readonly>{% endif %}
+
+        <label for="title">ID</label>
+        <input name="technique_id" class="form-control" id="id" {% if request_technique %} value="{{request_technique['technique_id']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
+      </div>
+
+  		<div class="col-5">
+		    <label for="title">Name</label>
+		    <input name="technique_name" class="form-control" id="name" {% if request_technique %} value="{{request_technique['technique_name']}}" {% else %} value="{{ request.form['name'] }}" {% endif %}>  
+  		</div>
+
+      <div class="col-5">
+        <label for="title">Related tactic</label>
+        <select name='related_tactic'>
+            {% for name in tactics_list %}
+              <option value="{{ name }}">{{ name['Tactic'] }}</option>
+            {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-9">
+      		<label for="description">Description</label>
+    		<textarea name="description" class="form-control" id="description">{% if request_tool %} {{request_technique['technique_description']}}
+            {% else %}{{ request.form['technique_description'] }}{% endif %}</textarea>
+  		</div>
+
+
+      	<div class="col-7">
+    		<input type="submit" class="btn btn-dark" value="Save">
+  		</div>
+  	</div>
+  </form>
+{% endblock %}

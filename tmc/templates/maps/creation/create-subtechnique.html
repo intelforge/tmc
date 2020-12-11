@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  {% if request_subtechnique %}
+    <h1>Edit subtechnique</h1>
+  {% else %}
+    <h1>New subtechnique</h1>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+  	<div class="form-group row">
+      <div class="col-3">
+        {% if request_subtechnique %}
+        <label for="title">Database ID</label>
+        <input class="form-control" id="db_id" name="db_id" value="{{request_subtechnique['id']}}" readonly>{% endif %}
+
+        <label for="title">ID</label>
+        <input name="subtechnique_id" class="form-control" id="id" {% if request_subtechnique %} value="{{request_subtechnique['subtechnique_id']}}" {% else %} value="{{ request.form['name'] }}"  {% endif %}> 
+      </div>
+
+      <div class="col-5">
+        <label for="title">Related technique</label>
+        <select name='related_technique'>
+            {% for name in techniques_list %}
+              <option value="{{ name }}">{{ name['Technique'] }}</option>
+            {% endfor %}
+        </select>
+      </div>
+
+      	<div class="col-9">
+      		<label for="description">Description</label>
+    		<textarea name="description" class="form-control" id="description">{{ request.form['description'] }}</textarea>
+  		</div>
+
+      	<div class="col-7">
+    		<input type="submit" class="btn btn-dark" value="Save">
+  		</div>
+  	</div>
+  </form>
+{% endblock %}

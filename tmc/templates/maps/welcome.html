@@ -1,0 +1,64 @@
+{% extends 'index.html' %}
+
+{% block header %}
+
+  <h2>{% block title %}Welcome!{% endblock %}</h2>
+  <p>Load one or multiple URLs to carry out the mapping against TRAM. <br \> Select which adversary, tool, and industry you want that mapping to be associated with.</p>
+  {% if g.user %}
+    <!--Add new links to different sections this for a home page 
+    <a class="action" href="{{ url_for('maps.create_adversary') }}">New</a>
+
+    Add function to ask you to log in if not logged before searching-->
+  {% endif %}
+{% endblock %}
+
+<!--Search by Adversary-->
+{% block content %}
+  <form action="/tram-interaction" method="post">
+
+    <div class="form-group row align-items-end">
+      <div class="col-5">
+        <label for="title">Select related Adversary</label>
+         <!-- Make this an editable input a dropdown menu with a select to the adversaries in the database -->
+        <select name='adversary'>
+            {% for name in adversaries_list %}
+              <option value="{{ name }}">{{ name['Adversary'] }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="title">Select related Tool</label>
+        <select name='tool'>
+            {% for name in tools_list %}
+              <option value="{{ name }}">{{ name['Name'] }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="title">Select related Industry</label>
+        <select name='industry'>
+            {% for name in industries_list %}
+              <option value="{{ name }}">{{ name['Industry'] }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="title">Event name</label>
+        <input name="event_name" class="form-control" id="event_name" value="{{ request.form['event_name'] }}" required>
+
+        <label for="title">Event description</label>
+        <input name="event_description" class="form-control" id="event_description" value="{{ request.form['event_description'] }}" required>
+        
+        <div class="form-group row align-items-end">
+          <div class="col-10">
+            <label for="title">Insert URL</label>
+            <input name="url" class="form-control" id="url" value="{{ request.form['url'] }}" required>
+          </div>
+
+          <div class="col-2">
+            <input type="submit" class="btn btn-dark" value="Map!" onclick="open_tram()">
+          </div>
+        </div>
+
+      </div>
+      </div>
+  </form>
+
+{% endblock %}
