@@ -6,13 +6,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <script src="https://kit.fontawesome.com/f77d338b26.js" crossorigin="anonymous"></script>
-
-
-
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='custom.js') }}"></script>
-
 
 <style type="text/css">
   
@@ -43,7 +39,7 @@
 
 <nav class='container n1'>
   <a href="/" style="color: #000">
-  <img src="../static/glasses.png" alt='glasses logo' id="logo">
+  <img src={{url_for('static', filename='glasses.png')}} alt='glasses logo' id="logo">
   <h1 style="font-size: 2.3em;">Threat Mapping Catalogue</h1>
   </a>
   <ul>

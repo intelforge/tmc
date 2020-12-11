@@ -45,11 +45,14 @@
                   <td scope="row" name="{{ key }}">{{ value }}</td>
                  {% endif %}
               {% endfor %}
-                <td scope="row" class="col-2">
+                <td scope="row">
                     <a href="#" onclick="clickRowListener(this)" class="disabled" title="/edit" method = POST><i class="fas fa-edit fa-lg"></i></a>
-                    <a href="#" onclick="clickRowListener(this)" class="disabled" title="/svg"><i class="fas fa-file-download fa-lg"></i></a>
-                    <a href="#" onclick="clickRowListener(this)" class="disabled" title="/export"><i class="fas fa-file-export fa-lg"></i></a>
-                    <a href="#" onclick="clickRowListener(this)" class="disabled" title="/nav"><i class="fas fa-external-link-square-alt fa-lg"></i></a>
+                    {% if title == 'Adversaries' or title == 'Tools' %}
+                        <a href="#" onclick="clickRowListener(this)" class="disabled" title="/nav"><i class="fas fa-external-link-square-alt fa-lg"></i></a>
+                        <a href="#" onclick="clickRowListener(this)" class="disabled" title="/export"><i class="fas fa-file-export fa-lg"></i></a>
+                        <!--
+                        <a href="#" onclick="clickRowListener(this)" class="disabled" title="/svg"><i class="fas fa-file-download fa-lg"></i></a> -->
+                    {% endif %}
                 </td>
               </tr>
             {% endfor %}

@@ -11,6 +11,10 @@ Threat Mapping Catalogue
 - [python3](https://www.python.org/) (3.7+)
 - Flask
 - Sqlite
+- **TRAM adaptation** : (https://github.com/fierytermite/tram-1) [forked from fixed version by [@cyb3rR4v3n](https://twitter.com/cyb3rR4v3n) 
+- **Attack Navigator adaptation** : (https://github.com/fierytermite/attack-navigator)  
+
+Note!! In order to the Navigator Adaptatio to work properly you would have to work around CORS blocked by policy. You can get away easily by using Chrome browser extension [Allow CORS: Access-Control-Allow-Origin](https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?). Keep in mind that CORS blocks are implemented for security reasons, so allow them wisely. You can still use TRAM and all other functionality without it.  
 
 ## Installation
 
@@ -33,12 +37,12 @@ flask init-db
 flask run
 ```
 
-Once the server has started, access the application through localhost:5555. You will need to register an user and log in in order to use the application.
+Once the server has started, access the application through localhost:5000. **You will need to register an user and log in in order to use the application.**
 
-To load the database with the data from [ATT&CK](https://attack.mitre.org/) access the following path. Please be patiente, since this operation **really takes a while**:
+To load the database with the data from [ATT&CK](https://attack.mitre.org/) access the following path. Please be patiente, since this operation **really takes a while** (aprox 1h 30m, depending on your internet connection):
 
 ```
-localhost:5555/first-time
+localhost:5000/first-time
 ```
 
 Keep in mind that the next time you want to run the application, you **don't have to** initilizate the database, since doing it will erase any content loaded in it. Repeat the previous steps without that command:
@@ -65,13 +69,13 @@ flask run -p <number> -h 0.0.0.0
 
 [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0)
 
-# TO-Do
+# TO-DOs
 
-- [ ] Add Industry List
-- [ ] Add mapping from TRAM
-- [ ] Link TMC with TRAM
-- [ ] Link TMC with Navigator
-- [ ] Download TMC mapping from Navigator as SVG
-- [ ] Export as CSV function
-- [ ] Edit database screens
+- [x] Add Industry List
+- [x] Add mapping from TRAM
+- [x] Link TMC with TRAM
+- [x] Link TMC with Navigator
+- [ ] Automatically download the mapping from Navigator as SVG
+- [x] Export as CSV function
+- [x] Edit database views
 - [ ] Dockerize project 

@@ -7,14 +7,32 @@ from tmc.db import get_db
 from IPython import embed
 import tmc.queries as q
 from tmc.queries import *
+from random import random
 import tmc.processor as processor
 import tmc.config as config
 import time
 import json
 import ast
 import requests
+import csv
+import os
+import uuid 
+import urllib
+
 
 bp = Blueprint('maps', __name__, template_folder='templates')
+
+
+# Loading ATT&CK to DB for the first time
+@bp.route('/first-time')
+@login_required
+def first_time():
+    
+    print('Interacting with ATTACKCTI...')
+    processor.get_elements()
+    message="You can now start exploring the database."
+
+    return render_template('maps/completed.html', message=message)
 
 
 # Homepage
@@ -99,44 +117,133 @@ def wait_tram_response():
     
     return render_template('maps/completed.html', message=message)
 
-# Loading ATT&CK to DB for the first time
-@bp.route('/first-time')
-@login_required
-def first_time():
-    
-    print('Interacting with ATTACKCTI...')
-    processor.get_elements()
-    message="You can now start exploring the database."
-
-    return render_template('maps/completed.html', message=message)
-
-# Export Results
-@bp.route('/export')
-def export_file(): 
-
-    return True
-
-
 # Navigator Functions
 
-# Download SVG
-@bp.route('/svg')
-def download_svg(): 
-
-    return True
 
 # Open Navigator
-@bp.route('/open-in-nav')
-def open_in_nav(): 
+@bp.route('/nav/<element>/<element_id>') 
+def open_in_nav(element, element_id): 
+    nav_dict = {
+       "name":"Threat Mapping Catalogue",
+        "versions": {
+        "attack": "8",
+        "navigator": "4.0",
+        "layer": "4.0"
+        },
+       "description": element + " related techniques",
+       "domain":"mitre-enterprise",
+       "gradient":{
+          "colors":[
+             "#778ca3",
+             "#778ca3"
+          ],
+          "minValue":0,
+          "maxValue":100
+       },
+       "legendItems":[
+          {
+             "label":"Has at least one test",
+             "color":"#ce232e"
+          }
+       ],
+       "techniques":[]
+       }
 
-    return True
+    element_techniques = ''
+
+    # Both queries bring techniques & subtechniques
+    if element == 'adversary':
+        element_techniques = q_get_adversaries_techniques.get_adversaries_techniques(element_id)
+    elif element == 'tool':
+        element_techniques = q_get_tool_techniques.get_tool_techniques(element_id)
+
+    for technique in element_techniques:
+        if technique['Subtechnique ID']:
+            new_technique = {
+                "techniqueID": technique['Subtechnique ID'],
+                "score":100,
+                "enabled":True
+                }
+        else:
+            new_technique = {
+                "techniqueID": technique['Technique ID'],
+                "score":100,
+                "enabled":True
+                }
+
+        nav_dict['techniques'].append(new_technique)
+
+    # Creates a json file with the retrieved information from the database
+    filename = create_nav_file(nav_dict, element, element_id)
+    # Creates the url with the path to the created file to send it to the navigator 
+    encoded_path = urllib.parse.quote_plus(str(config.config_dict['tmc'])+'/static/export/'+str(filename))
+    encoded_url = str(config.config_dict['navigator']+'/fetch/'+encoded_path)
+
+    return redirect(encoded_url)
+
+
+def create_nav_file(nav_dict, element, element_id):
+    filename = element + '_' + str(element_id) + '_' + str(uuid.uuid1()) + '.json'
+    directory = os.path.dirname(os.path.realpath(__file__)) + '/static/export/'
+    filepath = directory + filename
+
+    with open(filepath, 'w+') as fh:
+        json.dump(nav_dict, fh)
+    fh.close()
+
+    return filename
+
+# Export Results
+@bp.route('/export/<element>/<element_id>')
+def export_file(element, element_id): 
+
+    # Both queries bring techniques & subtechniques
+    if element == 'adversary':
+        element_techniques = q_get_adversaries_techniques.get_adversaries_techniques(element_id)
+        create_csv_file(element_techniques, element, element_id)
+    elif element == 'tool':
+        element_techniques = q_get_tool_techniques.get_tool_techniques(element_id)
+        create_csv_file(element_techniques, element, element_id)
+
+    return render_template('maps/explore/main.html') 
+
+def create_csv_file(element_techniques, element, element_id):
+    
+    headers = 'Tool \t Technique ID \t Technique \t Subtechnique ID \t Subtechnique'
+    filename = element + '_' + str(element_id) + '_techniques_mapped_' + str(uuid.uuid1()) +'.csv'
+    parent = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
+    filepath = parent + '/export/' + filename
+
+
+    with open(filepath, 'w+', newline='') as new_file:
+        new_file.write(headers +'\n')
+        for line in element_techniques:
+            for key, value in line.items():
+                new_file.write(str(value) + '\t')
+            new_file.write('\n')
+    new_file.close()
+
+
+
+# Download SVG
+@bp.route('/svg/<element>/<element_id>')
+def download_svg(element, element_id): 
+
+    # Both queries bring techniques & subtechniques
+    if element == 'adversary':
+        element_techniques = q_get_adversaries_techniques.get_adversaries_techniques(element_id)
+    elif element == 'tool':
+        element_techniques = q_get_tool_techniques.get_tool_techniques(element_id)
+
+
+    return render_template('maps/explore/main.html') 
 
 
 # List all posible actions to display data
 @bp.route('/explore')
 def explore():
 
-    return render_template('maps/explore.html') 
+    return render_template('maps/explore/main.html') 
 
 
 # Displays all adversaries in the DB
@@ -364,7 +471,8 @@ def create_adversary():
                 (adversary_id, adversary_name, adversary_description, adversary_identifiers, adversary_origin, g.user['id'])
             )
             db.commit()
-            return redirect(url_for('maps.create_adversary')) #add success/error message
+            message = 'Successfully created Adversary'
+            return render_template('maps/completed.html', message=message)
 
     return render_template('maps/creation/create-adversary.html', countries_list=countries_list, request_adversary = '')
 
@@ -438,7 +546,9 @@ def create_tool():
                 (tool_id, tool_name, tool_description, tool_description, g.user['id'])
             )
             db.commit()
-            return redirect(url_for('maps.create_tool'))
+            message = 'Successfully created tool'
+
+            return render_template('maps/completed.html', message=message)
 
     return render_template('maps/creation/create-tool.html')
 
@@ -528,8 +638,9 @@ def create_technique():
 
             tactic_id = q.q_get_element_id.get_element_id('tactics', 'tactic_name', tactic)
             q_insert_tactic_x_technique.insert_tactic_x_technique(tactic_id, technique_db_id)
+            message = 'Successfully created technique'
 
-            return redirect(url_for('maps.create_technique')) #add success alternative
+            return render_template('maps/completed.html', message=message)
 
 
     return render_template('maps/creation/create-technique.html', tactics_list=tactics_list)
@@ -614,7 +725,8 @@ def create_subtechnique():
             technique_id = q.q_get_element_id.get_element_id('techniques', 'technique_name', technique)
             insert_into_table = q.q_insert_relation_into_tables.insert_relation_into_tables('techniques_x_subtechniques', 'technique_id', 'subtechnique_id', technique_id, subtechnique_db_id)
 
-            return redirect(url_for('maps.create_subtechnique')) #add success alternative
+            message = 'Successfully created Subtechnique'
+            return render_template('maps/completed.html', message=message)
 
     return render_template('maps/creation/create-subtechnique.html', techniques_list=techniques_list)
 

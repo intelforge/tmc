@@ -26,9 +26,9 @@ $(document).ready(function() {
         else {
             table.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
-            for (var i = 0; i < anchor.length; i++) {
-              anchor[i].classList.remove('disabled');
-              
+            var enables = table.$('tr.selected').children()[5].children;
+            for (var i = 0; i < enables.length; i++) {
+              enables[i].classList.remove('disabled');
             }
         }
     } );

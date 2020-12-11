@@ -7,4 +7,5 @@ test/
 instance/
 *.sqlite
 
+export/
 tmc/config.py
