@@ -5,11 +5,14 @@ from tmc.db import get_db, make_dicts
 def get_events_x_industry():
 
     db = get_db()
+    db.row_factory = make_dicts
     try:
-        db.row_factory = make_dicts
-        #db.row_factory = lambda cursor, row: {row: row[0]}
         query = db.execute(
-            'SELECT adversary_id as ID, adversary_name as Name, adversary_identifiers as Identifiers, adversary_description as Description FROM adversaries ORDER BY Name').fetchall()
+            'select a.adversary_name, i.industry_name, e.event_name from events e \
+            inner join events_x_industries ei on e.id = ei.event_id \
+            inner join industries i on i.id = ei.industry_id \
+            inner join adversaries_x_events ae on ae.event_id = e.id \
+            inner join adversaries a on a.id = ae.adversary_id').fetchall()
         return query
     except TypeError:
         #embed()

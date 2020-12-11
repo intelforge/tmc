@@ -215,7 +215,7 @@ def insert_tacxtec(technique_id, related_tactic):
     tactic_id = q.q_get_element_id.get_element_id('tactics', 'tactic_name', tactic)
 
     if tactic_id == 0:
-        logging.info('Deprecated tactic in %s: ' % technique_id)
+        logging.info('Unrecognized tactic in %s: ' % technique_id)
     else:
         try:
             tactic_x_technique = q.q_insert_tactic_x_technique.insert_tactic_x_technique(tactic_id, technique_id)

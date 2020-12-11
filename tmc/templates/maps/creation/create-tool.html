@@ -31,10 +31,19 @@
         {% else %} value="{{ request.form['identifiers'] }}"  {% endif %}>  
       </div>
 
+      <div class="col-5">
+          <label for="title">Adversary</label>
+            <select name='related_adversary'>
+            {% for name in adversary_list %}
+                <option value="{{ name }}">{{ name['Adversary'] }}</option>
+              {% endfor %}
+          </select>
+        </div>
+
       <div class="col-10">
       	<label for="description">Description</label>
-    		  <textarea name="description" class="form-control" id="description">{% if request_tool %} {{request_tool['tool_description']}}
-            {% else %}{{ request.form['description'] }}{% endif %}</textarea>
+    		  <textarea name="tool_description" class="form-control" id="description">{% if request_tool %} {{request_tool['tool_description']}}
+            {% else %}{{ request.form['tool_description'] }}{% endif %}</textarea>
   		</div>
 
       	<div class="col-7">
@@ -44,7 +53,7 @@
   	</div>
   </form>
 
-   {% if request_tool_techniques|length %}
+   {% if request_tools_techniques|length %}
 
       <table class="table display" id="explore_results">
         <thead>
@@ -56,14 +65,14 @@
           </tr>
         </thead>
         <tbody>
-            {% for element in request_tool_techniques %}
+            {% for element in request_tools_techniques %}
               <tr>
                 {% for key, value in element.items() %}
                   <td scope="row" name="{{ key }}">{{ value }}</td>
                 {% endfor %}
-                  <td scope="row" class="col-2">
-                    <a class="disabled" href="" onclick="" title="/edit" method = POST><i class="fas fa-edit fa-lg"></i></a>
-                    <a class="disabled" href="" onclick="" title="/delete" method = POST><i class="fas fa-trash fa-lg"></i></a>
+                  <td scope="row">
+                    <a class="disabled" style="color: #000; cursor: not-allowed; opacity: 0.5;" href="" onclick="" title="/edit" method = POST><i class="fas fa-edit fa-lg"></i></a>
+                    <a class="disabled" style="color: #000; cursor: not-allowed; opacity: 0.5;" href="" onclick="" title="/delete" method = POST><i class="fas fa-trash fa-lg"></i></a>
                   </td>
               </tr>
             {% endfor %}

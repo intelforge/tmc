@@ -7,8 +7,8 @@ def get_adversaries_techniques(adversary_id):
     db = get_db()
     db.row_factory = make_dicts
     try:
-        query = db.execute('select t.tool_name as Tool, tec.technique_id as \'Technique ID\', \
-            tec.technique_name as Technique,  null as \'Subtechnique ID\', null as Subtechnique \
+        query = db.execute('select t.tool_name as Tool, tec.technique_id as TechniqueID, \
+            tec.technique_name as Technique,  null as SubtechniqueID, null as Subtechnique \
             from adversaries_x_tools at \
             inner join tools t on at.tool_id = t.id \
             inner join tools_x_techniques tt on t.id = tt.tool_id \

@@ -35,6 +35,8 @@ CREATE TABLE adversaries (
   adversary_description TEXT NOT NULL,
   adversary_identifiers TEXT,
   adversary_sorigin TEXT,
+  updated_date DATETIME,
+  updated_by TEXT,
   FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
@@ -45,6 +47,8 @@ CREATE TABLE tactics (
   tactic_id TEXT NOT NULL,
   tactic_name TEXT NOT NULL,
   tactic_description TEXT NOT NULL,
+  updated_date DATETIME,
+  updated_by TEXT,
   FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
@@ -55,6 +59,8 @@ CREATE TABLE techniques (
   technique_id TEXT NOT NULL,
   technique_name TEXT NOT NULL,
   technique_description TEXT NOT NULL,
+  updated_date DATETIME,
+  updated_by TEXT,
   FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
@@ -65,6 +71,8 @@ CREATE TABLE subtechniques (
   subtechnique_id TEXT NOT NULL,
   subtechnique_name TEXT NOT NULL,
   subtechnique_description TEXT NOT NULL,
+  updated_date DATETIME,
+  updated_by TEXT,
   FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
@@ -76,6 +84,8 @@ CREATE TABLE tools (
   tool_name TEXT NOT NULL,
   tool_description TEXT NOT NULL,
   tool_identifiers TEXT,
+  updated_date DATETIME,
+  updated_by TEXT,
   FOREIGN KEY (author_id) REFERENCES users (id)
 );
 

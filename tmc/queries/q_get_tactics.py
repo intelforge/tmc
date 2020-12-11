@@ -8,7 +8,7 @@ def get_tactics(tactic=''):
     try:
         if not tactic:
             query = db.execute(
-            'SELECT id as \'db_id\', tactic_id as ID, tactic_name as Name, tactic_description as Description FROM tactics ORDER BY tactic_name ASC').fetchall()
+            'SELECT id as \'db_id\', tactic_id as ID, tactic_name as Tactic, tactic_description as Description FROM tactics ORDER BY tactic_name ASC').fetchall()
             return query
         else:
             query = db.execute( 'SELECT * FROM tactics WHERE id is ?', 

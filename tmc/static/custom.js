@@ -26,7 +26,8 @@ $(document).ready(function() {
         else {
             table.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
-            var enables = table.$('tr.selected').children()[5].children;
+            var column_count = table.$('tr.selected').children().length;
+            var enables = table.$('tr.selected').children()[column_count-1].children;
             for (var i = 0; i < enables.length; i++) {
               enables[i].classList.remove('disabled');
             }

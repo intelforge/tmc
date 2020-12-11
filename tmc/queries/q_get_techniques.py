@@ -8,7 +8,7 @@ def get_techniques(technique=''):
     try:
         if not technique:
             query = db.execute(
-            'SELECT id as \'db_id\', technique_id as ID, technique_name as Name, technique_description as Description FROM techniques ORDER BY technique_name ASC').fetchall()
+            'SELECT id as \'db_id\', technique_id as ID, technique_name as Technique, technique_description as Description FROM techniques ORDER BY technique_name ASC').fetchall()
             return query
         else:
             query = db.execute( 'SELECT * FROM techniques WHERE id is ?', 

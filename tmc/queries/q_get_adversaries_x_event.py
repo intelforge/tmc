@@ -9,7 +9,9 @@ def get_adversaries_x_event():
         db.row_factory = make_dicts
         #db.row_factory = lambda cursor, row: {row: row[0]}
         query = db.execute(
-            'SELECT adversary_id as ID, adversary_name as Name, adversary_identifiers as Identifiers, adversary_description as Description FROM adversaries ORDER BY Name').fetchall()
+            'select a.adversary_id, a.adversary_name, event_name, event_description from events e \
+            inner join adversaries_x_events ae on ae.event_id = e.id \
+            inner join adversaries a on a.id = ae.adversary_id ORDER BY adversary_name').fetchall()
         return query
     except TypeError:
         #embed()

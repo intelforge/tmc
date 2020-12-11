@@ -155,7 +155,7 @@ def open_in_nav(element, element_id):
     if element == 'adversary':
         element_techniques = q_get_adversaries_techniques.get_adversaries_techniques(element_id)
     elif element == 'tool':
-        element_techniques = q_get_tool_techniques.get_tool_techniques(element_id)
+        element_techniques = q_get_tools_techniques.get_tools_techniques(element_id)
 
     for technique in element_techniques:
         if technique['Subtechnique ID']:
@@ -202,7 +202,7 @@ def export_file(element, element_id):
         element_techniques = q_get_adversaries_techniques.get_adversaries_techniques(element_id)
         create_csv_file(element_techniques, element, element_id)
     elif element == 'tool':
-        element_techniques = q_get_tool_techniques.get_tool_techniques(element_id)
+        element_techniques = q_get_tools_techniques.get_tools_techniques(element_id)
         create_csv_file(element_techniques, element, element_id)
 
     return render_template('maps/explore/main.html') 
@@ -223,9 +223,8 @@ def create_csv_file(element_techniques, element, element_id):
             new_file.write('\n')
     new_file.close()
 
-
-
-# Download SVG
+'''
+# Download SVG ---------------
 @bp.route('/svg/<element>/<element_id>')
 def download_svg(element, element_id): 
 
@@ -233,11 +232,11 @@ def download_svg(element, element_id):
     if element == 'adversary':
         element_techniques = q_get_adversaries_techniques.get_adversaries_techniques(element_id)
     elif element == 'tool':
-        element_techniques = q_get_tool_techniques.get_tool_techniques(element_id)
+        element_techniques = q_get_tools_techniques.get_tools_techniques(element_id)
 
 
     return render_template('maps/explore/main.html') 
-
+'''
 
 # List all posible actions to display data
 @bp.route('/explore')
@@ -320,12 +319,16 @@ def explore_subtechniques():
 # Display Adversaries per event
 @bp.route('/adversaries-x-event')
 def get_adversaries_x_event():  
-    adversaries_x_event = ''
+    
+    title='Adversaries per event'
+
+    adversaries_x_event = q.q_get_adversaries_x_event.get_adversaries_x_event()
+    adversaries_x_event_th = adversaries_x_event[0].keys()
 
     if not adversaries_x_event:
         return render_template('maps/no-data.html')
 
-    return render_template('maps/relations/explore-element.html')
+    return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_event_th, paginated_element=adversaries_x_event)
 
 
 # Display Adversaries per suspected origin
@@ -361,13 +364,15 @@ def get_adversaries_x_industry():
 @bp.route('/events-x-industry')
 def get_events_x_industry():
 
-    events_x_industry = ''
+    title = 'Eventes por industry'
+    events_x_industry = q.q_get_events_x_industry.get_events_x_industry()
+    events_x_industry_th = events_x_industry[0].keys()
     
     if not events_x_industry:
         return render_template('maps/no-data.html')
 
     else:
-        return render_template('maps/explore/explore-element.html', title=title, element_th=adversaries_x_sorigin_th, paginated_element=adversaries_x_sorigin)
+        return render_template('maps/explore/explore-element.html', title=title, element_th=events_x_industry_th, paginated_element=events_x_industry)
 
 
 # Display Techniques per industry
@@ -416,8 +421,6 @@ def get_tools_x_techniques():
 
     tools_x_techniques = q.q_get_tools_x_techniques.get_tools_x_techniques()
     tools_x_techniques_th = tools_x_techniques[0].keys()  
-
-    pagination_tools_x_techniques, page, per_page, offset, pagination = calculate_pagination(tools_x_techniques)
 
     return render_template('maps/explore/explore-element.html', title=title, element_th=tools_x_techniques_th, paginated_element=tools_x_techniques)
 
@@ -489,7 +492,7 @@ def render_edit_adversary(element):
     else:
         adversary_techniques_th = ''
 
-    if request_adversary is False:
+    if not request_adversary:
         return render_template('maps/404.html')
     else:
         return render_template('maps/creation/create-adversary.html', request_adversary_techniques=request_adversary_techniques, element_th=adversary_techniques_th, request_adversary=request_adversary, countries_list=countries_list)
@@ -501,7 +504,6 @@ def edit_adversary():
     try:
         if request.method == 'POST':
             edited = request.form
-
             db_id = edited['db_id']
             adversary_id = edited['adversary_id']
             adversary_name = edited['adversary_name']
@@ -517,7 +519,9 @@ def edit_adversary():
             )
             db.commit()
 
-            return redirect('/explore-adversaries') 
+            message = 'Successfully created adversaries'
+
+            return render_template('maps/completed.html', message=message)
     except:
         return render_template('maps/404.html')
 
@@ -526,66 +530,62 @@ def edit_adversary():
 @bp.route('/create-tool', methods=('GET', 'POST'))
 @login_required
 def create_tool():
+    adversary_list = q.q_get_adversaries.get_adversaries()
+
     if request.method == "POST":
-        tool_id = request.form['id']
-        tool_name = request.form['name']
+
+        tool_id = request.form['tool_id']
+        tool_name = request.form['tool_name']
+        tool_identifiers = request.form['tool_identifiers']
+        adversary_id = rast.literal_eval(request.form['related_adversary'])['db_id']
         tool_description = request.form['description']
-        tool_identifiers = request.form['identifiers']
-        error = None
+        updated_date = time.strftime('%Y-%m-%d %H:%M:%S')
 
-        if not tool_name:
-            error = 'Tool name is required.'
-
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO tools (tool_id, tool_name, tool_description, tool_description, author_id)'
+        db = get_db()
+        db.execute(
+            'INSERT INTO tools (tool_id, tool_name, tool_description, tool_description, author_id)'
                 ' VALUES (?, ?, ?, ?, ?)',
                 (tool_id, tool_name, tool_description, tool_description, g.user['id'])
             )
-            db.commit()
-            message = 'Successfully created tool'
+        db.commit()
+        q_insert_adversary_x_tool.insert_adversary_x_tool(adversary_id, tool_id)
+        message = 'Successfully created tool'
 
-            return render_template('maps/completed.html', message=message)
+        return render_template('maps/completed.html', message=message)
 
-    return render_template('maps/creation/create-tool.html')
+    return render_template('maps/creation/create-tool.html', adversary_list=adversary_list)
 
 
 @bp.route('/edit/tool/<element>', methods=('GET', 'POST'))
 def render_edit_tool(element):
+    request_tool = q.q_get_tools.get_tools(element)
+    adversary_list = q.q_get_adversaries.get_adversaries()
+    request_tools_techniques = q.q_get_tools_techniques.get_tools_techniques(element)
 
-    request_tool=q.q_get_tools.get_tools(element)
-
-# MISSING QUERY HERE
-
-    request_tool_techniques=q.q_get_tool_techniques.get_tool_techniques(element)
-
-    if request_tool_techniques:
-        tool_techniques_th = request_tool_techniques[0].keys()
+    if request_tools_techniques:
+        tool_techniques_th = request_tools_techniques[0].keys()
     else:
         tool_techniques_th = ''
 
-    if request_tool is False:
+    if not request_tool:
         return render_template('maps/404.html')
     else:
-        return render_template('maps/creation/create-tool.html', request_tool_techniques=request_tool_techniques, element_th=tool_techniques_th, request_tool=request_tool)
+        return render_template('maps/creation/create-tool.html', request_tools_techniques=request_tools_techniques, element_th=tool_techniques_th, request_tool=request_tool, adversary_list=adversary_list)
 
 
 @bp.route('/edit-tool', methods=('GET', 'POST'))
 @login_required
 def edit_tool():
+
     try:
         if request.method == 'POST':
             edited = request.form
-
             db_id = edited['db_id']
             tool_id = edited['tool_id']
             tool_name = edited['tool_name']
             tool_identifiers = edited['tool_identifiers']
-            tool_adversary = edited['tool_adversary']
-            tool_description = edited['description']
+            adversary_id = ast.literal_eval(request.form['related_adversary'])['db_id']
+            tool_description = edited['tool_description']
             updated_date = time.strftime('%Y-%m-%d %H:%M:%S')
 
             db = get_db()
@@ -594,6 +594,7 @@ def edit_tool():
                 (tool_id, tool_name, tool_description, tool_identifiers, updated_date, g.user['id'], db_id,)
             )
             db.commit()
+            q_insert_adversary_x_tool.insert_adversary_x_tool(adversary_id, tool_id)
 
             return redirect('/explore-tools') 
     except:
@@ -607,7 +608,6 @@ def create_technique():
 
     tactics_list = q.q_get_tactics.get_tactics()
 
-
     if request.method == "POST":
 
         technique_id = request.form['id']
@@ -618,30 +618,20 @@ def create_technique():
         technique_tactic = json.loads(processed_tactic_str) 
         tactic = technique_tactic['Name']
 
-        error = None
+        db = get_db()
+        result = db.execute(
+           'INSERT INTO techniques (technique_id, technique_name, technique_description, author_id)'
+           ' VALUES (?, ?, ?, ?)',
+            (technique_id, technique_name, technique_description, g.user['id'])
+        )
+        db.commit()
+        technique_db_id = result.lastrowid
+        tactic_id = q.q_get_element_id.get_element_id('tactics', 'tactic_name', tactic)
+        q_insert_tactic_x_technique.insert_tactic_x_technique(tactic_id, technique_db_id)
 
-        if not technique_name:
-            error = 'Adversary name is required.'
+        message = 'Successfully created technique'
 
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            result = db.execute(
-                'INSERT INTO techniques (technique_id, technique_name, technique_description, author_id)'
-                ' VALUES (?, ?, ?, ?)',
-                (technique_id, technique_name, technique_description, g.user['id'])
-            )
-            db.commit()
-            technique_db_id = result.lastrowid
-
-
-            tactic_id = q.q_get_element_id.get_element_id('tactics', 'tactic_name', tactic)
-            q_insert_tactic_x_technique.insert_tactic_x_technique(tactic_id, technique_db_id)
-            message = 'Successfully created technique'
-
-            return render_template('maps/completed.html', message=message)
-
+        return render_template('maps/completed.html', message=message)
 
     return render_template('maps/creation/create-technique.html', tactics_list=tactics_list)
 
@@ -649,6 +639,7 @@ def create_technique():
 @bp.route('/edit/technique/<element>', methods=('GET', 'POST'))
 def render_edit_technique(element):
 
+    tactics_list = q.q_get_tactics.get_tactics()
     request_technique=q.q_get_techniques.get_techniques(element)
     request_related_tools=q.q_get_tools_x_techniques.get_tools_x_techniques(element)
 
@@ -657,10 +648,10 @@ def render_edit_technique(element):
     else:
         request_related_tools_th = ''
 
-    if request_technique is False:
+    if not request_technique:
         return render_template('maps/404.html')
     else:
-        return render_template('maps/creation/create-technique.html', request_related_tools=request_related_tools, element_th=request_related_tools_th, request_technique=request_technique)
+        return render_template('maps/creation/create-technique.html', request_related_tools=request_related_tools, element_th=request_related_tools_th, request_technique=request_technique, tactics_list=tactics_list)
 
 
 @bp.route('/edit-technique', methods=('GET', 'POST'))
@@ -673,7 +664,7 @@ def edit_technique():
             db_id = edited['db_id']
             technique_id = edited['technique_id']
             technique_name = edited['technique_name']
-            technique_tactic = edited['technique_tactic']
+            tactic_id = ast.literal_eval(request.form['related_tactic'])['db_id']
             technique_description = edited['description']
             updated_date = time.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -683,6 +674,8 @@ def edit_technique():
                 (technique_id, technique_name, technique_description, updated_date, g.user['id'], db_id,)
             )
             db.commit()
+            
+            q_insert_tactic_x_technique.insert_tactic_x_technique(tactic_id, technique_db_id)
 
             return redirect('/explore-techniques') 
     except:
@@ -696,37 +689,25 @@ def create_subtechnique():
     techniques_list = q.q_get_techniques.get_techniques()
     
     if request.method == "POST":
-
-        subtechnique_id = request.form['id']
-        subtechnique_name = request.form['name']
+        subtechnique_id = request.form['db_id']
+        subtechnique_name = request.form['subtechnique_name']
+        technique_id =  ast.literal_eval(request.form['related_technique'])['db_id']
         subtechnique_description = request.form['description']
-        unprocessed_technique = request.form['techniques']
-        processed_technique_str =request.form['tactic'].replace('\'','\"') 
-        subtechnique_technique = json.loads(processed_tactic_str) 
-        technique = subtechnique_technique['Name']
-        error = None
+        
+        db = get_db()
+        result = db.execute(
+            'INSERT INTO subtechniques (subtechnique_id, subtechnique_name, subtechnique_description, author_id)'
+            ' VALUES (?, ?, ?, ?)',
+            (subtechnique_id, subtechnique_name, subtechnique_description, g.user['id'])
+        )
+        db.commit()
+        subtechnique_db_id = result.lastrowid
 
-        if not adversary_name:
-            error = 'Adversary name is required.'
+        insert_into_table = q.q_insert_relation_into_tables.insert_relation_into_tables('techniques_x_subtechniques', 'technique_id', 'subtechnique_id', technique_id, subtechnique_db_id)
 
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            result = db.execute(
-                'INSERT INTO subtechniques (subtechnique_id, subtechnique_name, subtechnique_description, author_id)'
-                ' VALUES (?, ?, ?, ?)',
-                (technique_id, technique_name, technique_description, g.user['id'])
-            )
-            db.commit()
-            subtechnique_db_id = result.lastrowid
-
-
-            technique_id = q.q_get_element_id.get_element_id('techniques', 'technique_name', technique)
-            insert_into_table = q.q_insert_relation_into_tables.insert_relation_into_tables('techniques_x_subtechniques', 'technique_id', 'subtechnique_id', technique_id, subtechnique_db_id)
-
-            message = 'Successfully created Subtechnique'
-            return render_template('maps/completed.html', message=message)
+        message = 'Successfully created subtechnique'
+        
+        return render_template('maps/completed.html', message=message)
 
     return render_template('maps/creation/create-subtechnique.html', techniques_list=techniques_list)
 
@@ -734,6 +715,7 @@ def create_subtechnique():
 @bp.route('/edit/subtechnique/<element>', methods=('GET', 'POST'))
 def render_edit_subtechnique(element):
 
+    techniques_list = q.q_get_techniques.get_techniques()
     request_subtechnique=q.q_get_subtechniques.get_subtechniques(element)
     request_related_tools=q.q_get_tools_x_subtechniques.get_tools_x_subtechniques(element)
 
@@ -742,10 +724,10 @@ def render_edit_subtechnique(element):
     else:
         request_related_tools_th = ''
 
-    if request_subtechnique is False:
+    if not request_subtechnique:
         return render_template('maps/404.html')
     else:
-        return render_template('maps/creation/create-subtechnique.html', request_related_tools=request_related_tools, element_th=request_related_tools_th, request_subtechnique=request_subtechnique)
+        return render_template('maps/creation/create-subtechnique.html', request_related_tools=request_related_tools, element_th=request_related_tools_th, request_subtechnique=request_subtechnique, techniques_list=techniques_list)
 
 
 @bp.route('/edit-subtechnique', methods=('GET', 'POST'))
