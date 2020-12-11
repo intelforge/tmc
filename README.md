@@ -14,7 +14,13 @@ Threat Mapping Catalogue
 - **TRAM adaptation** : (https://github.com/fierytermite/tram-1) [forked from fixed version by [@cyb3rR4v3n](https://twitter.com/cyb3rR4v3n) 
 - **Attack Navigator adaptation** : (https://github.com/fierytermite/attack-navigator)  
 
-Note!! In order to the Navigator Adaptatio to work properly you would have to work around CORS blocked by policy. You can get away easily by using Chrome browser extension [Allow CORS: Access-Control-Allow-Origin](https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?). Keep in mind that CORS blocks are implemented for security reasons, so allow them wisely. You can still use TRAM and all other functionality without it.  
+For the navigator, you'll need to clone the branch 'tmc' in order to make it work:
+
+```
+git clone --branch tmc https://github.com/fierytermite/attack-navigator
+```
+
+Note!! In order to the Navigator Adaptation to work properly you would have to work around CORS blocked by policy. You can get away easily by using Chrome browser extension [Allow CORS: Access-Control-Allow-Origin](https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf?). Keep in mind that CORS blocks are implemented for security reasons, so allow them wisely. You can still use TRAM and all other functionality without it.  
 
 ## Installation
 

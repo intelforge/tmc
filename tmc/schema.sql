@@ -1,7 +1,6 @@
 -- Initialize the database.
 -- Drop any existing data and create empty tables.
 
-DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS adversaries;
 DROP TABLE IF EXISTS tactics;
 DROP TABLE IF EXISTS techniques;
@@ -9,16 +8,19 @@ DROP TABLE IF EXISTS subtechniques;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS tools;
 DROP TABLE IF EXISTS industries;
-DROP TABLE IF EXISTS event_x_industry;
+DROP TABLE IF EXISTS events_x_industries;
+DROP TABLE IF EXISTS adversaries_x_events;
+DROP TABLE IF EXISTS events_x_industry;
 DROP TABLE IF EXISTS adversaries_x_tools;
 DROP TABLE IF EXISTS tools_x_techniques;
 DROP TABLE IF EXISTS tools_x_subtechniques;
 DROP TABLE IF EXISTS tactics_x_techniques;
 DROP TABLE IF EXISTS techniques_x_subtechniques;
 DROP TABLE IF EXISTS countries;
+DROP TABLE IF EXISTS users;
 
 
-CREATE TABLE user (
+CREATE TABLE users (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 username TEXT UNIQUE NOT NULL,
 password TEXT NOT NULL
@@ -33,7 +35,7 @@ CREATE TABLE adversaries (
   adversary_description TEXT NOT NULL,
   adversary_identifiers TEXT,
   adversary_sorigin TEXT,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+  FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
 CREATE TABLE tactics (
@@ -43,7 +45,7 @@ CREATE TABLE tactics (
   tactic_id TEXT NOT NULL,
   tactic_name TEXT NOT NULL,
   tactic_description TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+  FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
 CREATE TABLE techniques (
@@ -53,7 +55,7 @@ CREATE TABLE techniques (
   technique_id TEXT NOT NULL,
   technique_name TEXT NOT NULL,
   technique_description TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+  FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
 CREATE TABLE subtechniques (
@@ -63,7 +65,7 @@ CREATE TABLE subtechniques (
   subtechnique_id TEXT NOT NULL,
   subtechnique_name TEXT NOT NULL,
   subtechnique_description TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+  FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
 CREATE TABLE tools (
@@ -74,7 +76,7 @@ CREATE TABLE tools (
   tool_name TEXT NOT NULL,
   tool_description TEXT NOT NULL,
   tool_identifiers TEXT,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+  FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
 CREATE TABLE events (
@@ -85,7 +87,7 @@ CREATE TABLE events (
   event_description TEXT NOT NULL,
   event_url TEXT,
   event_date DATETIME,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+  FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
 CREATE TABLE adversaries_x_tools (
@@ -94,7 +96,7 @@ CREATE TABLE adversaries_x_tools (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   adversary_id TEXT NOT NULL,
   tool_id TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (author_id) REFERENCES users (id),
   FOREIGN KEY (adversary_id) REFERENCES adversary (id),
   FOREIGN KEY (tool_id) REFERENCES tool (id)
 );
@@ -105,7 +107,7 @@ CREATE TABLE adversaries_x_events (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   adversary_id TEXT NOT NULL,
   event_id TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (author_id) REFERENCES users (id),
   FOREIGN KEY (adversary_id) REFERENCES adversary (id),
   FOREIGN KEY (event_id) REFERENCES event (id)
 );
@@ -116,7 +118,7 @@ CREATE TABLE tools_x_techniques (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   tool_id TEXT NOT NULL,
   technique_id TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (author_id) REFERENCES users (id),
   FOREIGN KEY (tool_id) REFERENCES tool (id),
   FOREIGN KEY (technique_id) REFERENCES technique (id)
 );
@@ -127,7 +129,7 @@ CREATE TABLE tools_x_subtechniques (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   tool_id TEXT NOT NULL,
   subtechnique_id TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (author_id) REFERENCES users (id),
   FOREIGN KEY (tool_id) REFERENCES tool (id),
   FOREIGN KEY (subtechnique_id) REFERENCES subtechnique (id)
 );
@@ -138,7 +140,7 @@ CREATE TABLE tactics_x_techniques (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   tactic_id TEXT NOT NULL,
   technique_id TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (author_id) REFERENCES users (id),
   FOREIGN KEY (tactic_id) REFERENCES tactic (id),
   FOREIGN KEY (technique_id) REFERENCES technique (id)
 );
@@ -149,7 +151,7 @@ CREATE TABLE techniques_x_subtechniques (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   technique_id TEXT NOT NULL,
   subtechnique_id TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (author_id) REFERENCES users (id),
   FOREIGN KEY (technique_id) REFERENCES technique (id),
   FOREIGN KEY (subtechnique_id) REFERENCES subtechnique (id)
 );
@@ -164,7 +166,7 @@ CREATE TABLE industries (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   industry_name TEXT NOT NULL,
   industry_description TEXT,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+  FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
 CREATE TABLE countries (
@@ -174,7 +176,7 @@ created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 code TEXT NOT NULL,
 ctld TEXT NOT NULL,
 country TEXT NOT NULL,
-FOREIGN KEY (author_id) REFERENCES user (id)
+FOREIGN KEY (author_id) REFERENCES users (id)
 );
 
 CREATE TABLE events_x_industries (
@@ -183,11 +185,16 @@ CREATE TABLE events_x_industries (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   event_id TEXT NOT NULL,
   industry_id TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (author_id) REFERENCES users (id),
   FOREIGN KEY (event_id) REFERENCES event (id),
   FOREIGN KEY (industry_id) REFERENCES industry (id)
 );
 
+INSERT INTO adversaries (author_id, adversary_id, adversary_name, adversary_description)
+VALUES  (1, 1, 'Unknown', 'Unknown');
+
+INSERT INTO tools (author_id, tool_id, tool_name, tool_description)
+VALUES (1, 1, 'Unknown', 'Unknown');
 
 INSERT INTO industries (author_id, industry_name) 
 VALUES (1, 'Agriculture'),
@@ -216,9 +223,8 @@ VALUES (1, 'Agriculture'),
 (1, 'Telecommunications'),
 (1, 'Transportation'),
 (1, 'Utilities'),
-(1, 'Unspecified');
-
-
+(1, 'Unspecified'),
+(1, 'Unknown');
 
 INSERT INTO countries (author_id, code, ctld, country) 
 VALUES (1, 'AFG', 'AF', 'Afghanistan'),

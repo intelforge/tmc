@@ -109,7 +109,9 @@ div.container {
 
 .row a, .row a.disabled {
 	color: #000;
-	margin-right: 3%;
+	margin-right: 13%;
+	display: block;
+	padding-top: 15%;
 }
 
 .row a.disabled {
