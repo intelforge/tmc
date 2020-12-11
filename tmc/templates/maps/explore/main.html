@@ -34,11 +34,11 @@
   <li><a href="{{ url_for('maps.get_adversaries_x_tool') }}">Adversaries per tool</a></li>
   <li><a href="{{ url_for('maps.get_adversaries_x_technique') }}">Adversaries per technique</a></li>
   <li><a href="{{ url_for('maps.get_adversaries_x_sorigin') }}">Adversaries per suspected origin</a></li>
-  <li><a href="{{ url_for('maps.get_adversaries_x_industry') }}">Adversaries per industry</a></li>
   <li><a href="{{ url_for('maps.get_tools_x_techniques') }}">Tools per techniques</a></li>
   <li><a href="{{ url_for('maps.get_events_x_industry') }}">Events per industry</a></li>
   <li><a href="{{ url_for('maps.get_most_used_techniques') }}">Most used techniques</a></li>
-  <!--
-  <li><a href="{{ url_for('maps.get_techniques_per_industry') }}">Techniques per industry</a></li> -->
+  {# 
+  <li><a href="{{ url_for('maps.get_adversaries_x_industry') }}">Adversaries per industry</a></li>
+  <li><a href="{{ url_for('maps.get_techniques_per_industry') }}">Techniques per industry</a></li> #}
 </ul>
 {% endblock %}

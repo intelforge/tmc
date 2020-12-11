@@ -364,7 +364,7 @@ def get_adversaries_x_industry():
 @bp.route('/events-x-industry')
 def get_events_x_industry():
 
-    title = 'Eventes por industry'
+    title = 'Events per industry'
     events_x_industry = q.q_get_events_x_industry.get_events_x_industry()
     events_x_industry_th = events_x_industry[0].keys()
     
