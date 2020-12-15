@@ -158,15 +158,15 @@ def open_in_nav(element, element_id):
         element_techniques = q_get_tools_techniques.get_tools_techniques(element_id)
 
     for technique in element_techniques:
-        if technique['Subtechnique ID']:
+        if technique['SubtechniqueID']:
             new_technique = {
-                "techniqueID": technique['Subtechnique ID'],
+                "techniqueID": technique['SubtechniqueID'],
                 "score":100,
                 "enabled":True
                 }
         else:
             new_technique = {
-                "techniqueID": technique['Technique ID'],
+                "techniqueID": technique['TechniqueID'],
                 "score":100,
                 "enabled":True
                 }
